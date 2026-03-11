@@ -1,10 +1,11 @@
 import pygame
 
-WIDTH : int = 900
-HEIGHT : int = 600
-FPS : int = 60
+WIDTH: int = 900
+HEIGHT: int = 600
+FPS: int = 60
 
-BACKGROUND : str = "black"
+BACKGROUND: str = "black"
+
 
 def main() -> None:
 
@@ -27,7 +28,6 @@ def main() -> None:
 
         # rendering
 
-
         pygame.display.flip()
 
         # set FPS
@@ -35,5 +35,6 @@ def main() -> None:
 
     pygame.quit()
 
-if __name__ == "__main__":    
+
+if __name__ == "__main__":
     main()

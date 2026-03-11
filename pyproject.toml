@@ -12,3 +12,6 @@ dependencies = [
 dev = [
     "ruff>=0.15.5",
 ]
+
+[tool.ruff]
+target-version = "py312"
