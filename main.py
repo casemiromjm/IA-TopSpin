@@ -1,7 +1,9 @@
 import pygame
+import math
 
-WIDTH : int = 900
-HEIGHT : int = 600
+SCALE_FACTOR : int = 1
+WIDTH : int = 1280*SCALE_FACTOR
+HEIGHT : int = 720*SCALE_FACTOR
 FPS : float = 60.0
 
 # uses a name pygame color
@@ -21,12 +23,6 @@ def main() -> None:
     clock = pygame.time.Clock()
     running = True
 
-    screenWidth : int = screen.get_width()
-    screenHeight : int = screen.get_height()
-    screenCenter : tuple[int, int] = (int(screenWidth/2), int(screenHeight/2))
-
-    dt = 0
-
     while running:
         # event polling
         for event in pygame.event.get():
@@ -37,23 +33,40 @@ def main() -> None:
         # clear screen
         screen.fill(BACKGROUND_COLOR)
 
+        screenWidth: int = screen.get_width()
+        screenHeight: int = screen.get_height()
+        screenCenter: tuple[int, int] = (int(screenWidth/2), int(screenHeight/2))
+
         # rendering
 
         # board
-        ellipsisWidth : float = 700
-        ellipsisHeight : float = ellipsisWidth / 2
-        boardRectContainer : pygame.Rect = pygame.Rect(0, 0, ellipsisWidth, ellipsisHeight)
+        rectWidth: float = 700 * SCALE_FACTOR
+        rectHeight: float = rectWidth / 2
+        boardRectContainer: pygame.Rect = pygame.Rect(0, 0, rectWidth, rectHeight)
         boardRectContainer.center = screenCenter
-        pygame.draw.ellipse(screen, BOARD_COLOR, boardRectContainer)
+        pygame.draw.rect(screen, BOARD_COLOR, boardRectContainer, border_radius=30)
 
-        #rotate
-        rotateCircleCenter : tuple[int, int] = (screenCenter[0], screenCenter[1] - 150)
-        pygame.draw.circle(screen, ROTATE_CIRCLE_COLOR, rotateCircleCenter, 120)
+        # rotate
+        rotate_circle_radius = 140
+        rotateCircleCenter : tuple[int, int] = (screenCenter[0], screenCenter[1] - (150*SCALE_FACTOR))
+        pygame.draw.circle(screen, ROTATE_CIRCLE_COLOR, rotateCircleCenter, rotate_circle_radius*SCALE_FACTOR)
 
-        #slots; broken for now!
-        for i in range(20):
-            slotsCenter : tuple[int, int] = (screenCenter[0] + i*20, screenCenter[1]+20*i)
-            pygame.draw.circle(screen, SLOTS_COLOR, slotsCenter, 20)
+        #slots; only 3 inside the rotate circle for now, but it must be 4 and the track is not alright
+        total_slots: int = 20
+        # offset so that slots are drawn inside the board
+        offset: float = 30*SCALE_FACTOR
+        radius_x: float = rectWidth/2.0 - offset
+        radius_y:float = rectHeight/2.0 - offset
+
+        for i in range(total_slots):
+
+            angle = i*(2*math.pi / total_slots)
+            
+            slots_x = boardRectContainer.center[0] + radius_x * math.cos(angle)
+            slots_y = boardRectContainer.center[1] + radius_y * math.sin(angle)
+
+            slotsCenter : tuple[int, int] = (int(slots_x), int(slots_y))
+            pygame.draw.circle(screen, SLOTS_COLOR, slotsCenter, 20*SCALE_FACTOR)
 
         pygame.display.flip()
 
