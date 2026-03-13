@@ -15,11 +15,13 @@ class Board:
     @staticmethod
     def move_left(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
         """Rotate the ring one position to the left."""
+        # (1, 2, 3) -> ((2, 3, 1), 1)
         return state[1:] + (state[0],), 1
 
     @staticmethod
     def move_right(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
         """Rotate the ring one position to the right."""
+        # (1, 2, 3) -> ((3, 1, 2), 1)
         return (state[-1],) + state[:-1], 1
 
     @staticmethod
@@ -31,13 +33,14 @@ class Board:
         return tuple(lst), 1
 
     @staticmethod
-    def is_goal(self, state: Tuple[int, ...]) -> bool:
-        return state == tuple(range(1, self.size + 1))
-
-    @staticmethod
     def get_child_states(state: Tuple[int, ...]):
+        """Aggregates all possible moves from the current state."""
         return [
             Board.move_left(state),
             Board.move_right(state),
             Board.spin(state),
         ]
+
+    def is_goal(self, state: Tuple[int, ...]) -> bool:
+        """Checks if the state is sorted."""
+        return state == tuple(range(1, self.size + 1))
