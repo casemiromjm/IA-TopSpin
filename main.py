@@ -44,18 +44,18 @@ def main() -> None:
     pygame.quit()
     """
 
-    initial_state = (3, 2, 1, 4, 5, 6)
+    board = Board(size=6, spin_size=3, initial_state=(3, 2, 1, 4, 5, 6))
 
-    print(f"Starting search from: {initial_state}")
+    print(f"Starting search from: {board.initial_state}")
 
     goal_node = breadth_first_search(
-        initial_state, Board.is_goal, lambda s: Board.get_child_states(s)
+        board.initial_state,
+        board.is_goal,
+        board.get_child_states,
     )
 
     if goal_node:
         print_solution(goal_node)
-    else:
-        print("No solution found.")
 
 
 if __name__ == "__main__":

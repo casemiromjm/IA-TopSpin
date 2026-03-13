@@ -1,51 +1,58 @@
-from typing import Tuple
+from typing import List, Tuple
 
 
 class Board:
-    SPIN_SIZE: int = 4
-
     def __init__(
-        self, size: int = 20, spin_size: int = 4, initial_state: Tuple[int, ...] = None
-    ):
+        self,
+        size: int = 20,
+        spin_size: int = 4,
+        initial_state: Tuple[int, ...] | None = None,
+    ) -> None:
         self.size = size
         self.spin_size = spin_size
         if initial_state is not None:
-            self.state = initial_state
+            self._initial_state = initial_state
         else:
-            self.state = tuple(range(1, size + 1))
+            self._initial_state = tuple(range(1, size + 1))
 
-        Board.SPIN_SIZE = spin_size
+    @property
+    def initial_state(self) -> Tuple[int, ...]:
+        """Return the starting state for this board."""
+        return self._initial_state
 
     @staticmethod
     def move_left(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
-        """Rotate the ring one position to the left."""
-        # (1, 2, 3) -> ((2, 3, 1), 1)
+        """Rotate the ring one position to the left.
+
+        Example: (1, 2, 3) -> ((2, 3, 1), 1)
+        """
         return state[1:] + (state[0],), 1
 
     @staticmethod
     def move_right(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
-        """Rotate the ring one position to the right."""
-        # (1, 2, 3) -> ((3, 1, 2), 1)
+        """Rotate the ring one position to the right.
+
+        Example: (1, 2, 3) -> ((3, 1, 2), 1)
+        """
         return (state[-1],) + state[:-1], 1
 
-    @staticmethod
-    def spin(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
-        """Reverse the first 'spin_size' elements."""
+    def spin(self, state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
+        """Reverse the first `spin_size` elements (the spin window)."""
         lst = list(state)
-        segment = lst[: Board.SPIN_SIZE]
-        lst[: Board.SPIN_SIZE] = segment[::-1]
+        segment = lst[: self.spin_size]
+        lst[: self.spin_size] = segment[::-1]
         return tuple(lst), 1
 
-    @staticmethod
-    def get_child_states(state: Tuple[int, ...]):
-        """Aggregates all possible moves from the current state."""
+    def get_child_states(
+        self, state: Tuple[int, ...]
+    ) -> List[Tuple[Tuple[int, ...], int]]:
+        """Return all successor states from applying each legal move once."""
         return [
             Board.move_left(state),
             Board.move_right(state),
-            Board.spin(state),
+            self.spin(state),
         ]
 
-    @staticmethod
-    def is_goal(state: Tuple[int, ...]) -> bool:
-        """Checks if the state is sorted from 1 to N."""
-        return state == tuple(range(1, len(state) + 1))
+    def is_goal(self, state: Tuple[int, ...]) -> bool:
+        """Check if the state is sorted from 1 to `size` for this board."""
+        return state == tuple(range(1, self.size + 1))
