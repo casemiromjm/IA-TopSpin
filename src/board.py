@@ -1,45 +1,28 @@
-from random import shuffle
-from collections import deque
-
-import utils
+from typing import Tuple
 
 
 class Board:
-    slots: deque[int]
-    moves: int
+    def __init__(
+        self, size: int = 20, spin_size: int = 4, initial_state: Tuple[int, ...] = None
+    ):
+        self.size = size
+        self.spin_size = spin_size
+        if initial_state is not None:
+            self.state = initial_state
+        else:
+            self.state = tuple(range(1, size + 1))
 
-    def __init__(self):
-        # initialize the board with the shuffled slots
-        self.slots = deque([x for x in range(1, 21)])
-        shuffle(self.slots)
+    def move_left(state: Tuple[int, ...]):
+        return state[1:] + (state[0],), 1
 
-        self.moves = 0
+    def move_right(state: Tuple[int, ...]):
+        return (state[-1],) + state[:-1], 1
 
-    def rotate(self):
-        """rotate 4 slots. consider that the 4 slots able to rotate are always at the beginning of the array (deque) for simplicity"""
-        self.slots[0], self.slots[3] = self.slots[3], self.slots[0]
-        self.slots[1], self.slots[2] = self.slots[2], self.slots[1]
+    def spin(state: Tuple[int, ...]):
+        lst = list(state)
+        segment = lst[: state.spin_size]
+        lst[: state.spin_size] = segment[::-1]
+        return tuple(lst), 1
 
-    def move_right(self):
-        self.slots.rotate(1)
-
-        self.moves += 1
-
-    def move_left(self):
-        self.slots.rotate(-1)
-
-        self.moves += 1
-
-
-def main() -> None:
-    """function for simple testing"""
-    b: Board = Board()
-    print(b.slots)
-    b.rotate()
-    print(b.slots)
-
-    print(utils.checkWinner(b))
-
-
-if __name__ == "__main__":
-    main()
+    def is_goal(self, state: Tuple[int, ...]) -> bool:
+        return state == tuple(range(1, self.size + 1))
