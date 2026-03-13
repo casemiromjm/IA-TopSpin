@@ -12,17 +12,32 @@ class Board:
         else:
             self.state = tuple(range(1, size + 1))
 
-    def move_left(state: Tuple[int, ...]):
+    @staticmethod
+    def move_left(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
+        """Rotate the ring one position to the left."""
         return state[1:] + (state[0],), 1
 
-    def move_right(state: Tuple[int, ...]):
+    @staticmethod
+    def move_right(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
+        """Rotate the ring one position to the right."""
         return (state[-1],) + state[:-1], 1
 
-    def spin(state: Tuple[int, ...]):
+    @staticmethod
+    def spin(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
+        """Reverse the first 'spin_size' elements."""
         lst = list(state)
         segment = lst[: state.spin_size]
         lst[: state.spin_size] = segment[::-1]
         return tuple(lst), 1
 
+    @staticmethod
     def is_goal(self, state: Tuple[int, ...]) -> bool:
         return state == tuple(range(1, self.size + 1))
+
+    @staticmethod
+    def get_child_states(state: Tuple[int, ...]):
+        return [
+            Board.move_left(state),
+            Board.move_right(state),
+            Board.spin(state),
+        ]
