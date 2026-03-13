@@ -28,8 +28,10 @@
     in {
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
-          python312
-          uv
+          python313
+          python313Packages.uv
+          python313Packages.ruff
+
           just
         ];
 
