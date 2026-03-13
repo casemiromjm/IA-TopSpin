@@ -3,6 +3,21 @@ from collections import deque
 from .node import TreeNode
 
 
+def print_solution(node):
+    """Traces back from the goal node to the root using parent links to print the sequence of states found by the search."""
+    path = []
+
+    while node is not None:
+        path.append(node.state)
+        node = node.parent
+
+    path.reverse()
+
+    print(f"\nSolution found in {len(path) - 1} steps:")
+    for i, state in enumerate(path):
+        print(f"Step {i}: {state}")
+
+
 def breadth_first_search(initial_state, goal_state_func, operators_func):
     root = TreeNode(initial_state)
     queue = deque([root])

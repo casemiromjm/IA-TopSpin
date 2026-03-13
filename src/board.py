@@ -2,6 +2,8 @@ from typing import Tuple
 
 
 class Board:
+    SPIN_SIZE: int = 4
+
     def __init__(
         self, size: int = 20, spin_size: int = 4, initial_state: Tuple[int, ...] = None
     ):
@@ -11,6 +13,8 @@ class Board:
             self.state = initial_state
         else:
             self.state = tuple(range(1, size + 1))
+
+        Board.SPIN_SIZE = spin_size
 
     @staticmethod
     def move_left(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
@@ -28,8 +32,8 @@ class Board:
     def spin(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
         """Reverse the first 'spin_size' elements."""
         lst = list(state)
-        segment = lst[: state.spin_size]
-        lst[: state.spin_size] = segment[::-1]
+        segment = lst[: Board.SPIN_SIZE]
+        lst[: Board.SPIN_SIZE] = segment[::-1]
         return tuple(lst), 1
 
     @staticmethod
@@ -41,6 +45,7 @@ class Board:
             Board.spin(state),
         ]
 
-    def is_goal(self, state: Tuple[int, ...]) -> bool:
-        """Checks if the state is sorted."""
-        return state == tuple(range(1, self.size + 1))
+    @staticmethod
+    def is_goal(state: Tuple[int, ...]) -> bool:
+        """Checks if the state is sorted from 1 to N."""
+        return state == tuple(range(1, len(state) + 1))

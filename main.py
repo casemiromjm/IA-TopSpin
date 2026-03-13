@@ -8,7 +8,7 @@ HEIGHT: int = 720 * SCALE_FACTOR
 FPS: float = 60.0
 """
 
-from src.algorithms.search import breadth_first_search
+from src.algorithms.search import breadth_first_search, print_solution
 from src.board import Board
 
 
@@ -44,17 +44,16 @@ def main() -> None:
     pygame.quit()
     """
 
-    board = Board(size=10, spin_size=4)
-    initial_state = board.state
+    initial_state = (3, 2, 1, 4, 5, 6)
+
+    print(f"Starting search from: {initial_state}")
 
     goal_node = breadth_first_search(
-        initial_state,
-        board.is_goal,
-        board.get_child_states,
+        initial_state, Board.is_goal, lambda s: Board.get_child_states(s)
     )
 
     if goal_node:
-        print("Solution found.")
+        print_solution(goal_node)
     else:
         print("No solution found.")
 
