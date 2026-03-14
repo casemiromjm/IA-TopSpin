@@ -36,3 +36,26 @@ def breadth_first_search(initial_state, goal_state_func, operators_func):
                 node.add_child(child)
                 queue.append(child)
     return None
+
+
+def depth_first_search(initial_state, goal_state_func, operators_func):
+    root = TreeNode(initial_state)
+    stack = [root]
+    visited = {initial_state}
+
+    while stack:
+        node = stack.pop()
+
+        if goal_state_func(node.state):
+            return node
+
+        children = operators_func(node.state)
+
+        for state, cost in children:
+            if state not in visited:
+                visited.add(state)
+                child = TreeNode(state, parent=node)
+                node.add_child(child)
+                stack.append(child)
+
+    return None

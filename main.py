@@ -44,7 +44,7 @@ def main() -> None:
     pygame.quit()
     """
 
-    board = Board(size=6, spin_size=3, initial_state=(3, 2, 1, 4, 5, 6))
+    board = Board(size=10, spin_size=4, initial_state=(7, 2, 9, 4, 10, 3, 6, 1, 8, 5))
 
     print(f"Starting search from: {board.initial_state}")
 
