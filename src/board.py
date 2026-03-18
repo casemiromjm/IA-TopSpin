@@ -14,6 +14,7 @@ class Board:
             self._initial_state = initial_state
         else:
             self._initial_state = tuple(range(1, size + 1))
+        self._goal_state = tuple(range(1, size + 1))
 
     @property
     def initial_state(self) -> Tuple[int, ...]:
@@ -55,4 +56,4 @@ class Board:
 
     def is_goal(self, state: Tuple[int, ...]) -> bool:
         """Check if the state is sorted from 1 to `size` for this board."""
-        return state == tuple(range(1, self.size + 1))
+        return state == self._goal_state
