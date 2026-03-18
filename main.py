@@ -1,14 +1,12 @@
-import pygame
-
-from src.view.game_view import SCALE_FACTOR, draw_frame
-
-WIDTH: int = 1280 * SCALE_FACTOR
-HEIGHT: int = 720 * SCALE_FACTOR
-FPS: float = 60.0
+from src.algorithms.search import (
+    iterative_deepening_search,
+    print_solution,
+)
+from src.board import Board
 
 
 def main() -> None:
-
+    """
     # pygame setup
     pygame.init()
     pygame.display.set_caption("IART - Top Spin")
@@ -37,6 +35,20 @@ def main() -> None:
         clock.tick(FPS)
 
     pygame.quit()
+    """
+
+    board = Board(size=10, spin_size=4, initial_state=(7, 2, 9, 4, 10, 3, 6, 1, 8, 5))
+
+    print(f"Starting search from: {board.initial_state}")
+
+    goal_node = iterative_deepening_search(
+        board.initial_state,
+        board.is_goal,
+        board.get_child_states,
+    )
+
+    if goal_node:
+        print_solution(goal_node)
 
 
 if __name__ == "__main__":

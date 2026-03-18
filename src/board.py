@@ -1,45 +1,59 @@
-from random import shuffle
-from collections import deque
-
-import utils
+from typing import List, Tuple
 
 
 class Board:
-    slots: deque[int]
-    moves: int
+    def __init__(
+        self,
+        size: int = 20,
+        spin_size: int = 4,
+        initial_state: Tuple[int, ...] | None = None,
+    ) -> None:
+        self.size = size
+        self.spin_size = spin_size
+        if initial_state is not None:
+            self._initial_state = initial_state
+        else:
+            self._initial_state = tuple(range(1, size + 1))
+        self._goal_state = tuple(range(1, size + 1))
 
-    def __init__(self):
-        # initialize the board with the shuffled slots
-        self.slots = deque([x for x in range(1, 21)])
-        shuffle(self.slots)
+    @property
+    def initial_state(self) -> Tuple[int, ...]:
+        """Return the starting state for this board."""
+        return self._initial_state
 
-        self.moves = 0
+    @staticmethod
+    def move_left(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
+        """Rotate the ring one position to the left.
 
-    def rotate(self):
-        """rotate 4 slots. consider that the 4 slots able to rotate are always at the beginning of the array (deque) for simplicity"""
-        self.slots[0], self.slots[3] = self.slots[3], self.slots[0]
-        self.slots[1], self.slots[2] = self.slots[2], self.slots[1]
+        Example: (1, 2, 3) -> ((2, 3, 1), 1)
+        """
+        return state[1:] + (state[0],), 1
 
-    def move_right(self):
-        self.slots.rotate(1)
+    @staticmethod
+    def move_right(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
+        """Rotate the ring one position to the right.
 
-        self.moves += 1
+        Example: (1, 2, 3) -> ((3, 1, 2), 1)
+        """
+        return (state[-1],) + state[:-1], 1
 
-    def move_left(self):
-        self.slots.rotate(-1)
+    def spin(self, state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
+        """Reverse the first `spin_size` elements (the spin window)."""
+        lst = list(state)
+        segment = lst[: self.spin_size]
+        lst[: self.spin_size] = segment[::-1]
+        return tuple(lst), 1
 
-        self.moves += 1
+    def get_child_states(
+        self, state: Tuple[int, ...]
+    ) -> List[Tuple[Tuple[int, ...], int]]:
+        """Return all successor states from applying each legal move once."""
+        return [
+            Board.move_left(state),
+            Board.move_right(state),
+            self.spin(state),
+        ]
 
-
-def main() -> None:
-    """function for simple testing"""
-    b: Board = Board()
-    print(b.slots)
-    b.rotate()
-    print(b.slots)
-
-    print(utils.checkWinner(b))
-
-
-if __name__ == "__main__":
-    main()
+    def is_goal(self, state: Tuple[int, ...]) -> bool:
+        """Check if the state is sorted from 1 to `size` for this board."""
+        return state == self._goal_state
