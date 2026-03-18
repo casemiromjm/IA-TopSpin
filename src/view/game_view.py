@@ -9,6 +9,53 @@ BOARD_COLOR: str = "cornsilk4"
 SLOTS_COLOR: str = "gold"
 
 
+def _rounded_rect_point(
+    t: float, cx: float, cy: float, hw: float, hh: float, r: float
+) -> tuple[float, float]:
+    """Return a point at fraction t (0..1) along a rounded-rectangle perimeter, clockwise from top-center."""
+    r = min(r, hw, hh)
+    sw, sh = hw - r, hh - r  # straight half-extents
+    arc = math.pi / 2 * r
+    segments = [
+        (2 * sw, "top"),
+        (arc,    "arc_tr"),
+        (2 * sh, "right"),
+        (arc,    "arc_br"),
+        (2 * sw, "bottom"),
+        (arc,    "arc_bl"),
+        (2 * sh, "left"),
+        (arc,    "arc_tl"),
+    ]
+    total = sum(length for length, _ in segments)
+    d = (t % 1.0) * total
+
+    for length, name in segments:
+        if d <= length:
+            f = d / length if length else 0
+            if name == "top":
+                return (cx - sw + f * 2 * sw, cy - hh)
+            if name == "arc_tr":
+                a = -math.pi / 2 + f * math.pi / 2
+                return (cx + sw + r * math.cos(a), cy - sh + r * math.sin(a))
+            if name == "right":
+                return (cx + hw, cy - sh + f * 2 * sh)
+            if name == "arc_br":
+                a = f * math.pi / 2
+                return (cx + sw + r * math.cos(a), cy + sh + r * math.sin(a))
+            if name == "bottom":
+                return (cx + sw - f * 2 * sw, cy + hh)
+            if name == "arc_bl":
+                a = math.pi / 2 + f * math.pi / 2
+                return (cx - sw + r * math.cos(a), cy + sh + r * math.sin(a))
+            if name == "left":
+                return (cx - hw, cy + sh - f * 2 * sh)
+            if name == "arc_tl":
+                a = math.pi + f * math.pi / 2
+                return (cx - sw + r * math.cos(a), cy - sh + r * math.sin(a))
+        d -= length
+    return (cx - sw, cy - hh)
+
+
 def draw_frame(screen: pygame.Surface, screen_size: tuple[int, int]) -> None:
     """Draw a full frame of the game."""
     screen_width, screen_height = screen_size
@@ -23,13 +70,13 @@ def draw_frame(screen: pygame.Surface, screen_size: tuple[int, int]) -> None:
     rect_height: float = rect_width / 2
     board_rect_container: pygame.Rect = pygame.Rect(0, 0, rect_width, rect_height)
     board_rect_container.center = screen_center
-    pygame.draw.rect(screen, BOARD_COLOR, board_rect_container, border_radius=30)
+    pygame.draw.rect(screen, BOARD_COLOR, board_rect_container, border_radius=210)
 
     # rotate
     rotate_circle_radius = 140
     rotate_circle_center: tuple[int, int] = (
         screen_center[0],
-        screen_center[1] - (150 * SCALE_FACTOR),
+        screen_center[1] - (130 * SCALE_FACTOR),
     )
     pygame.draw.circle(
         screen,
@@ -38,18 +85,15 @@ def draw_frame(screen: pygame.Surface, screen_size: tuple[int, int]) -> None:
         rotate_circle_radius * SCALE_FACTOR,
     )
 
-    # slots; only 3 inside the rotate circle for now, but it must be 4 and the track is not alright
+    # slots
     total_slots: int = 20
-    # offset so that slots are drawn inside the board
-    offset: float = 30 * SCALE_FACTOR
-    radius_x: float = rect_width / 2.0 - offset
-    radius_y: float = rect_height / 2.0 - offset
+    offset: float = 50 * SCALE_FACTOR
+    cx, cy = board_rect_container.center
+    hw: float = rect_width / 2.0 - offset
+    hh: float = rect_height / 2.0 - offset
+    slot_corner_r: float = 210 - offset  # inset corner radius matches the board shape
 
+    start_offset: float = 0.044 * SCALE_FACTOR  # 0.0 = top-center, 0.25 = right, 0.5 = bottom-center, 0.75 = left
     for i in range(total_slots):
-        angle = i * (2 * math.pi / total_slots)
-
-        slots_x = board_rect_container.center[0] + radius_x * math.cos(angle)
-        slots_y = board_rect_container.center[1] + radius_y * math.sin(angle)
-
-        slots_center: tuple[int, int] = (int(slots_x), int(slots_y))
-        pygame.draw.circle(screen, SLOTS_COLOR, slots_center, 20 * SCALE_FACTOR)
+        sx, sy = _rounded_rect_point(start_offset + i / total_slots, cx, cy, hw, hh, slot_corner_r)
+        pygame.draw.circle(screen, SLOTS_COLOR, (int(sx), int(sy)), 30 * SCALE_FACTOR)
