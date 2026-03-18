@@ -1,14 +1,7 @@
-"""
-import pygame
-
-from src.view.game_view import SCALE_FACTOR, draw_frame
-
-WIDTH: int = 1280 * SCALE_FACTOR
-HEIGHT: int = 720 * SCALE_FACTOR
-FPS: float = 60.0
-"""
-
-from src.algorithms.search import breadth_first_search, print_solution
+from src.algorithms.search import (
+    iterative_deepening_search,
+    print_solution,
+)
 from src.board import Board
 
 
@@ -48,7 +41,7 @@ def main() -> None:
 
     print(f"Starting search from: {board.initial_state}")
 
-    goal_node = breadth_first_search(
+    goal_node = iterative_deepening_search(
         board.initial_state,
         board.is_goal,
         board.get_child_states,

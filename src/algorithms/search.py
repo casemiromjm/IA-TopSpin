@@ -59,3 +59,35 @@ def depth_first_search(initial_state, goal_state_func, operators_func):
                 stack.append(child)
 
     return None
+
+
+def depth_limited_search(node, goal_state_func, operators_func, limit):
+    stack = [(node, 0)]
+    visited_this_path = {node.state}
+
+    while stack:
+        current_node, current_depth = stack.pop()
+
+        if goal_state_func(current_node.state):
+            return current_node
+
+        if current_depth < limit:
+            for next_state, cost in reversed(operators_func(current_node.state)):
+                if next_state not in visited_this_path:
+                    child = TreeNode(next_state, parent=current_node)
+                    stack.append((child, current_depth + 1))
+                    visited_this_path.add(next_state)
+
+    return None
+
+
+def iterative_deepening_search(
+    initial_state, goal_state_func, operators_func, max_depth=1000
+):
+    for depth in range(max_depth + 1):
+        print(f"Searching with depth limit: {depth}")
+        root = TreeNode(initial_state)
+        result = depth_limited_search(root, goal_state_func, operators_func, depth)
+        if result:
+            return result
+    return None
