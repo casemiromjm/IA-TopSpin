@@ -6,9 +6,9 @@ SCALE_FACTOR: int = 1
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 BACKGROUND_COLOR: str = "antiquewhite1"
-BOARD_COLOR: tuple = (140, 122, 98)
-BOARD_DEPTH_COLOR: tuple = (85, 72, 55)
-BOARD_BORDER_COLOR: str = "cornsilk4"
+BOARD_COLOR: tuple  = (130, 135, 145)
+BOARD_DEPTH_COLOR: tuple       = (60, 62, 68)
+BOARD_BORDER_COLOR: tuple = (210, 215, 220)
 SLOTS_COLOR: str = "gold"
 SLOT_SHADOW_COLOR: tuple = (160, 115, 0)
 SLOT_HIGHLIGHT_COLOR: tuple = (255, 242, 140)
@@ -118,7 +118,9 @@ def draw_frame(screen: pygame.Surface, screen_size: tuple[int, int]) -> None:
     inner_h = _BOARD_HEIGHT - 2 * (_SLOT_TRACK_INSET + _SLOTS_SIZE) - _BOARD_BORDER
     board_rect_small_container: pygame.Rect = pygame.Rect(0, 0, inner_w, inner_h)
     board_rect_small_container.center = screen_center
-    board_depth_small_container: pygame.Rect = board_rect_small_container.move(0, _BOARD_DEPTH_Y)
+    board_depth_small_container: pygame.Rect = pygame.Rect(0, 0, inner_w, inner_h + _BOARD_DEPTH_Y)
+    board_depth_small_container.center = screen_center
+    board_depth_small_container.move_ip(0, _BOARD_DEPTH_Y // 2)
 
     # board 3-D depth
     board_r: int = min(BOARD_CORNER_RADIUS, int(_BOARD_WIDTH // 2), int(_BOARD_HEIGHT // 2))
