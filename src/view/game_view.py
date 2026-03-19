@@ -161,38 +161,58 @@ def draw_frame(screen: pygame.Surface, screen_size: tuple[int, int]) -> None:
                        (rcx + ROTATE_SHADOW_OFFSET, rcy + ROTATE_SHADOW_OFFSET), _ROTATE_R)
     # 2. solid blue base
     pygame.draw.circle(screen, ROTATE_CIRCLE_COLOR, rotate_circle_center, _ROTATE_R)
-    # 3. two pill-shaped slot cuts stacked vertically
-
-    slot_w: int = _ROTATE_R * 2
-    slot_h: int = depth_rect.top - board_rect_container.top -BOARD_BORDER
+    # 3. two slot cuts – polygons whose edges follow the actual circle arc
+    slot_h: int = depth_rect.top - board_rect_container.top - BOARD_BORDER
     second_slot_h: int = board_rect_small_container.top - depth_rect.top
-
     top_y: int = board_rect_container.top + BOARD_BORDER
-
-    slot_rect_t = pygame.Rect(rcx - _ROTATE_R, top_y, slot_w, slot_h)
-    slot_rect_b = pygame.Rect(rcx - _ROTATE_R, top_y + slot_h, slot_w, second_slot_h)
-
-    # border_radius = sagitta = R - sqrt(R²-dy²): how much the circle recedes horizontally at that y
-    # small near equator (circle is vertical → no rounding), large near top/bottom (circle curves in)
     R = _ROTATE_R
-    dy_top = rcy - top_y
-    top_radius = int(R - math.sqrt(max(0, R * R - dy_top * dy_top)))
+    _N_ARC = 32
 
-    bottom_y = top_y + slot_h + second_slot_h
-    dy_bot = bottom_y - rcy
-    bot_radius = int(R - math.sqrt(max(0, R * R - dy_bot * dy_bot)))
+    def _arc_band(y_top, y_bot):
+        """Polygon for a horizontal band inside the circle (sides follow the arc exactly)."""
+        dy_t = max(-R, min(R, rcy - y_top))
+        dy_b = max(-R, min(R, rcy - y_bot))
+        dx_t = math.sqrt(max(0, R * R - dy_t * dy_t))
+        dx_b = math.sqrt(max(0, R * R - dy_b * dy_b))
+        th_t = math.asin(dy_t / R)
+        th_b = math.asin(dy_b / R)
+        pts = []
+        # bottom chord (left → right)
+        pts.append((rcx - dx_b, y_bot))
+        pts.append((rcx + dx_b, y_bot))
+        # right arc (bottom → top)
+        for i in range(1, _N_ARC):
+            th = th_b + (th_t - th_b) * i / _N_ARC
+            pts.append((rcx + R * math.cos(th), rcy - R * math.sin(th)))
+        # top chord (right → left)
+        pts.append((rcx + dx_t, y_top))
+        pts.append((rcx - dx_t, y_top))
+        # left arc (top → bottom)
+        for i in range(1, _N_ARC):
+            th = (math.pi - th_t) + (th_t - th_b) * i / _N_ARC
+            pts.append((rcx + R * math.cos(th), rcy - R * math.sin(th)))
+        return pts
 
-    pygame.draw.rect(screen, ROTATE_CUT_COLOR, slot_rect_t,
-        border_top_left_radius=top_radius,
-        border_top_right_radius=top_radius,
-        border_bottom_left_radius=0,
-        border_bottom_right_radius=0)
+    # top cut
+    pts_top = _arc_band(top_y, top_y + slot_h)
+    pygame.draw.polygon(screen, ROTATE_CUT_COLOR, pts_top)
 
-    pygame.draw.rect(screen, ROTATE_CUT_SHADOW, slot_rect_b,
-        border_top_left_radius=0,
-        border_top_right_radius=0,
-        border_bottom_left_radius=bot_radius,
-        border_bottom_right_radius=bot_radius)
+    # bottom cut
+    pts_bot = _arc_band(top_y + slot_h, top_y + slot_h + second_slot_h)
+    pygame.draw.polygon(screen, ROTATE_CUT_SHADOW, pts_bot)
+
+    # divider highlight between the two cuts (rim catching light)
+    dy_mid = max(-R, min(R, rcy - (top_y + slot_h)))
+    dx_mid = math.sqrt(max(0, R * R - dy_mid * dy_mid))
+    pygame.draw.line(screen, ROTATE_CUT_HIGHLIGHT,
+                     (int(rcx - dx_mid + 2), top_y + slot_h),
+                     (int(rcx + dx_mid - 2), top_y + slot_h), 1)
+
+    # subtle specular highlight on the circle (upper arc)
+    _hl_r = R - 4
+    pygame.draw.arc(screen, ROTATE_HIGHLIGHT_COLOR,
+                    pygame.Rect(rcx - _hl_r, rcy - _hl_r, 2 * _hl_r, 2 * _hl_r),
+                    math.radians(45), math.radians(135), 2)
 
 
     _exposed_sin = (rcy - board_rect_container.top) / _ROTATE_R
@@ -202,8 +222,6 @@ def draw_frame(screen: pygame.Surface, screen_size: tuple[int, int]) -> None:
         pygame.draw.arc(screen, BOARD_BORDER_COLOR,
                         pygame.Rect(rcx - _arc_r, rcy - _arc_r, 2 * _arc_r, 2 * _arc_r),
                         _arc_angle, math.pi - _arc_angle, _BOARD_BORDER)
-
-
 
 
     # border rim drawn AFTER the circle → clips/overlaps the blue piece like a housing
