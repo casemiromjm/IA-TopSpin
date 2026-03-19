@@ -12,9 +12,12 @@ BOARD_BORDER_COLOR: tuple = (210, 215, 220)
 SLOTS_COLOR: str = "gold"
 SLOT_SHADOW_COLOR: tuple = (160, 115, 0)
 SLOT_HIGHLIGHT_COLOR: tuple = (255, 242, 140)
-ROTATE_CIRCLE_COLOR: str = "cornflowerblue"
-ROTATE_SHADOW_COLOR: tuple = (50, 80, 145)
-ROTATE_HIGHLIGHT_COLOR: tuple = (175, 215, 255)
+ROTATE_CIRCLE_COLOR: tuple    = (45, 95, 180)
+ROTATE_SHADOW_COLOR: tuple    = (40, 60, 110)
+ROTATE_HIGHLIGHT_COLOR: tuple = (160, 200, 255)
+ROTATE_CUT_COLOR: tuple       = (42, 77, 133)  # deep pit visible through the cut
+ROTATE_CUT_HIGHLIGHT: tuple   = (100, 150, 255) # light catching the cut edge
+ROTATE_CUT_SHADOW: tuple       = (29, 54, 93)  # deep pit visible through the cut
 
 # ── Board shape ───────────────────────────────────────────────────────────────
 BOARD_WIDTH: int = 700          # base width in pixels (scaled by SCALE_FACTOR)
@@ -142,22 +145,70 @@ def draw_frame(screen: pygame.Surface, screen_size: tuple[int, int]) -> None:
         ])
 
     # top face
-    pygame.draw.rect(screen, BOARD_COLOR,        board_rect_container,       border_radius=BOARD_CORNER_RADIUS)
-    pygame.draw.rect(screen, BOARD_DEPTH_COLOR,  depth_rect,                 border_radius=BOARD_CORNER_RADIUS)
-    pygame.draw.rect(screen, BOARD_COLOR, board_depth_small_container, border_radius=BOARD_CORNER_RADIUS)
-    pygame.draw.rect(screen, BOARD_BORDER_COLOR,        board_rect_small_container, border_radius=BOARD_CORNER_RADIUS)
-    # border rim
-    pygame.draw.rect(screen, BOARD_BORDER_COLOR, board_rect_container, width=_BOARD_BORDER, border_radius=BOARD_CORNER_RADIUS)
+    pygame.draw.rect(screen, BOARD_COLOR,       board_rect_container,       border_radius=BOARD_CORNER_RADIUS)
+    pygame.draw.rect(screen, BOARD_DEPTH_COLOR, depth_rect,                 border_radius=BOARD_CORNER_RADIUS)
+    pygame.draw.rect(screen, BOARD_COLOR,       board_depth_small_container, border_radius=BOARD_CORNER_RADIUS)
+    pygame.draw.rect(screen, BOARD_BORDER_COLOR, board_rect_small_container, border_radius=BOARD_CORNER_RADIUS)
 
-    # rotate circle
+    # rotate circle – drawn BEFORE the border rim so the rim acts as a housing clip
     rotate_circle_center: tuple[int, int] = (
         screen_center[0],
         screen_center[1] - _ROTATE_OFFSET_Y,
     )
     rcx, rcy = rotate_circle_center
-    pygame.draw.circle(screen, ROTATE_SHADOW_COLOR,    (rcx + ROTATE_SHADOW_OFFSET, rcy + ROTATE_SHADOW_OFFSET), _ROTATE_R)
-    pygame.draw.circle(screen, ROTATE_CIRCLE_COLOR,    rotate_circle_center,                                      _ROTATE_R)
-    pygame.draw.circle(screen, ROTATE_HIGHLIGHT_COLOR, (rcx - _ROTATE_R // 4, rcy - _ROTATE_R // 4),             _ROTATE_R // 4)
+    # 1. drop shadow
+    pygame.draw.circle(screen, ROTATE_SHADOW_COLOR,
+                       (rcx + ROTATE_SHADOW_OFFSET, rcy + ROTATE_SHADOW_OFFSET), _ROTATE_R)
+    # 2. solid blue base
+    pygame.draw.circle(screen, ROTATE_CIRCLE_COLOR, rotate_circle_center, _ROTATE_R)
+    # 3. two pill-shaped slot cuts stacked vertically
+
+    slot_w: int = _ROTATE_R * 2
+    slot_h: int = depth_rect.top - board_rect_container.top -BOARD_BORDER
+    second_slot_h: int = board_rect_small_container.top - depth_rect.top
+
+    top_y: int = board_rect_container.top + BOARD_BORDER
+
+    slot_rect_t = pygame.Rect(rcx - _ROTATE_R, top_y, slot_w, slot_h)
+    slot_rect_b = pygame.Rect(rcx - _ROTATE_R, top_y + slot_h, slot_w, second_slot_h)
+
+    # border_radius = sagitta = R - sqrt(R²-dy²): how much the circle recedes horizontally at that y
+    # small near equator (circle is vertical → no rounding), large near top/bottom (circle curves in)
+    R = _ROTATE_R
+    dy_top = rcy - top_y
+    top_radius = int(R - math.sqrt(max(0, R * R - dy_top * dy_top)))
+
+    bottom_y = top_y + slot_h + second_slot_h
+    dy_bot = bottom_y - rcy
+    bot_radius = int(R - math.sqrt(max(0, R * R - dy_bot * dy_bot)))
+
+    pygame.draw.rect(screen, ROTATE_CUT_COLOR, slot_rect_t,
+        border_top_left_radius=top_radius,
+        border_top_right_radius=top_radius,
+        border_bottom_left_radius=0,
+        border_bottom_right_radius=0)
+
+    pygame.draw.rect(screen, ROTATE_CUT_SHADOW, slot_rect_b,
+        border_top_left_radius=0,
+        border_top_right_radius=0,
+        border_bottom_left_radius=bot_radius,
+        border_bottom_right_radius=bot_radius)
+
+
+    _exposed_sin = (rcy - board_rect_container.top) / _ROTATE_R
+    if _exposed_sin < 1.0:
+        _arc_angle = math.asin(max(-1.0, _exposed_sin))
+        _arc_r = _ROTATE_R + _BOARD_BORDER
+        pygame.draw.arc(screen, BOARD_BORDER_COLOR,
+                        pygame.Rect(rcx - _arc_r, rcy - _arc_r, 2 * _arc_r, 2 * _arc_r),
+                        _arc_angle, math.pi - _arc_angle, _BOARD_BORDER)
+
+
+
+
+    # border rim drawn AFTER the circle → clips/overlaps the blue piece like a housing
+    pygame.draw.rect(screen, BOARD_BORDER_COLOR, board_rect_container,
+                     width=_BOARD_BORDER, border_radius=BOARD_CORNER_RADIUS)
 
     # slots
     cx, cy = board_rect_container.center
