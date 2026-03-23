@@ -3,7 +3,7 @@
 Usage:
     python3 solve.py --size 6 --board easy --algo bfs
     python3 solve.py --size 6 --board easy:2 --algo dfs
-    python3 solve.py --size 10 --board medium:1 --algo bfs
+    python3 solve.py --size 10 --board medium:1 --algo ids
     python3 solve.py --size 6 --board random --algo bfs
 
 --board format:  random | <difficulty> | <difficulty>:<number>
@@ -15,29 +15,73 @@ Usage:
 
 import argparse
 import time
-from collections import deque
 
 from src.board import Board
 from src.premade import get as get_config, CONFIGS
+from src.algorithms.search import (
+    breadth_first_search,
+    depth_first_search,
+    iterative_deepening_search,
+)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Inline algorithms — temporary until src/algorithms/search.py is filled in.
-# ─────────────────────────────────────────────────────────────────────────────
+def _states_to_moves(path: list) -> list[str]:
+    moves = []
+    for i in range(len(path) - 1):
+        s, ns = path[i], path[i + 1]
+        if s[1:] + (s[0],) == ns:
+            moves.append("left")
+        elif (s[-1],) + s[:-1] == ns:
+            moves.append("right")
+        else:
+            moves.append("rotate")
+    return moves
+
+
+def _extract(node) -> dict:
+    if node is None:
+        return {"solution": None, "steps": 0}
+    path = []
+    cur = node
+    while cur:
+        path.append(cur.state)
+        cur = cur.parent
+    path.reverse()
+    return {"solution": _states_to_moves(path), "steps": len(path) - 1}
+
 
 def _run_bfs(board: Board) -> dict:
+    t0 = time.time()
+    node = breadth_first_search(board.state_key(), board.is_goal, board.get_child_states)
+    result = _extract(node)
+    result["time"] = time.time() - t0
+    return result
 
-    return {"solution": [], "states": 0, "time": 0.0}
 
-def _run_dfs(board: Board, max_depth: int = 30) -> dict:
-    return {"solution": [], "states": 0, "time": 0.0}
+def _run_dfs(board: Board) -> dict:
+    t0 = time.time()
+    node = depth_first_search(board.state_key(), board.is_goal, board.get_child_states)
+    result = _extract(node)
+    result["time"] = time.time() - t0
+    return result
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Board loading
-# ─────────────────────────────────────────────────────────────────────────────
+
+def _run_ids(board: Board) -> dict:
+    t0 = time.time()
+    node = iterative_deepening_search(board.state_key(), board.is_goal, board.get_child_states)
+    result = _extract(node)
+    result["time"] = time.time() - t0
+    return result
+
+
+ALGOS = {
+    "bfs": _run_bfs,
+    "dfs": _run_dfs,
+    "ids": _run_ids,
+}
+
 
 def load_board(size: int, board_arg: str) -> Board:
-    """Parse --board argument and return a Board."""
     if board_arg.lower() == "random":
         return Board(size=size)
 
@@ -59,16 +103,12 @@ def load_board(size: int, board_arg: str) -> Board:
         )
     return Board(config=list(slots))
 
-ALGOS = {
-    "bfs": _run_bfs,
-    "dfs": _run_dfs,
-}
-
 
 def main():
     parser = argparse.ArgumentParser(description="Top Spin solver")
-    parser.add_argument("--size",  type=int, default=6, choices=[6, 10, 14, 20])
-    parser.add_argument("--board", type=str, default="random", help="random | <difficulty> | <difficulty>:<number>")
+    parser.add_argument("--size",  type=int, default=6, choices=[6, 10])
+    parser.add_argument("--board", type=str, default="random",
+                        help="random | <difficulty> | <difficulty>:<number>")
     parser.add_argument("--algo",  type=str, default="bfs", choices=list(ALGOS.keys()))
 
     args = parser.parse_args()
@@ -92,10 +132,9 @@ def main():
     if sol is None:
         print("No solution found.")
     else:
-        print(f"Solution ({len(sol)} moves): {' -> '.join(sol)}")
+        print(f"Solution ({result['steps']} moves): {' -> '.join(sol)}")
 
-    print(f"States visited : {result['states']}")
-    print(f"Time           : {result['time']:.4f}s")
+    print(f"Time : {result['time']:.4f}s")
 
 
 if __name__ == "__main__":

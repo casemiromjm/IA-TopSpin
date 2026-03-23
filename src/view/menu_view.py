@@ -9,6 +9,7 @@ from src.premade import count
 
 SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
+ALGOS = ["Human", "BFS", "DFS", "IDS"]
 
 BG_COLOR        = "antiquewhite1"
 TITLE_COLOR     = (45, 95, 180)
@@ -48,6 +49,7 @@ class MenuState:
         self.size: int = 1        # index into SIZES (default: 20)
         self.difficulty: int = 0  # index into DIFFICULTIES
         self.board_num: int = 0   # 0-based within difficulty
+        self.algo: int = 0        # index into ALGOS
 
     @property
     def selected_size(self) -> int:
@@ -56,6 +58,10 @@ class MenuState:
     @property
     def selected_difficulty(self) -> str:
         return DIFFICULTIES[self.difficulty]
+
+    @property
+    def selected_algo(self) -> str:
+        return ALGOS[self.algo]
 
     @property
     def num_boards(self) -> int:
@@ -106,9 +112,14 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
     screen.blit(_d, _d.get_rect(centerx=cx, top=base_y + ROW_GAP - 28))
     diff_rects = _button_row(screen, cx, base_y + ROW_GAP, DIFFICULTIES, state.difficulty, mouse)
 
+    # algorithm row
+    _a, _ = lbl_font.render("Solver", LABEL_COLOR)
+    screen.blit(_a, _a.get_rect(centerx=cx, top=base_y + ROW_GAP * 2 - 28))
+    algo_rects = _button_row(screen, cx, base_y + ROW_GAP * 2, ALGOS, state.algo, mouse)
+
     # board number sub-row — only when a difficulty (not Random) is selected
     board_rects = []
-    y2 = base_y + ROW_GAP * 2
+    y2 = base_y + ROW_GAP * 3
     if state.difficulty != 0:
         n = state.num_boards
         labels = [f"#{i}" for i in range(1, n + 1)]
@@ -128,7 +139,7 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
     hint, _ = _font("Arial", 15).render("← → shift    ↑ / R rotate    Q quit", SUBTITLE_COLOR)
     screen.blit(hint, hint.get_rect(centerx=cx, top=start_r.bottom + 24))
 
-    return {"size": size_rects, "diff": diff_rects, "board": board_rects, "start": start_r}
+    return {"size": size_rects, "diff": diff_rects, "algo": algo_rects, "board": board_rects, "start": start_r}
 
 
 def handle_menu_click(pos, rects, state: MenuState) -> bool:
@@ -139,13 +150,17 @@ def handle_menu_click(pos, rects, state: MenuState) -> bool:
                 state.difficulty = 0
                 state.board_num = 0
             return False
-    for i, r in enumerate(rects["diff"]):
+    for i, r in enumerate(rects.get("diff", [])):
         if r.collidepoint(pos):
             if state.difficulty != i:
                 state.difficulty = i
                 state.board_num = 0
             return False
-    for i, r in enumerate(rects["board"]):
+    for i, r in enumerate(rects.get("algo", [])):
+        if r.collidepoint(pos):
+            state.algo = i
+            return False
+    for i, r in enumerate(rects.get("board", [])):
         if r.collidepoint(pos):
             state.board_num = i
             return False
