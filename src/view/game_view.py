@@ -67,10 +67,10 @@ BOARD_DEPTH = _BOARD_DEPTH_Y
 #               (0.5 = midpoint, <0.5 = closer to the window ball)
 _SIZE_DISPLAY: dict[int, dict] = {
     #              cut_fracs: [top, mid, bot] as (ircy - y) / R  (positive = above circle centre)
-    10: {"aspect": 1.2, "slot_start": 0.924, "push_factor": 0.30, "corner_mult": 1.0, "gap_bias": 0.35,
-         "cut_fracs": [0.20, 0.0, -0.25]},
+    10: {"aspect": 1.9, "slot_start": -0.017, "push_factor": 0.15, "corner_mult": 0.70, "gap_bias": 0.35,
+         "cut_fracs": [0.15, 0.03, -0.42]},
     20: {"aspect": 2.0, "slot_start": 0.044, "push_factor": 0.15, "corner_mult": 1.0, "gap_bias": 0.35,
-         "cut_fracs": [0.14, 0.0, -0.29]},
+         "cut_fracs": [0.14, 0.0, -0.4]},
 }
 
 # ── Font cache ────────────────────────────────────────────────────────────────
@@ -298,63 +298,111 @@ def draw_frame(
     cut_y2 = int(ircy - _cut_fracs[1] * R)
     cut_y3 = int(ircy - _cut_fracs[2] * R)
 
-    # 1. drop shadow
-    pygame.draw.circle(screen, ROTATE_SHADOW_COLOR,
-                       (ircx + ROTATE_SHADOW_OFFSET, ircy + ROTATE_SHADOW_OFFSET), R)
-    # 2. solid base
-    pygame.draw.circle(screen, ROTATE_CIRCLE_COLOR, (ircx, ircy), R)
-    # 3. top cut band
-    pygame.draw.polygon(screen, ROTATE_CUT_COLOR,  _arc_band(cut_y1, cut_y2))
-    # 4. bottom cut band
-    pygame.draw.polygon(screen, ROTATE_CUT_SHADOW, _arc_band(cut_y2, cut_y3))
-    # 5. divider highlight
-    _dy_mid = max(-R, min(R, ircy - cut_y2))
-    _dx_mid = math.sqrt(max(0.0, R * R - _dy_mid * _dy_mid))
-    pygame.draw.line(screen, ROTATE_CUT_HIGHLIGHT,
-                     (int(ircx - _dx_mid + 2), cut_y2),
-                     (int(ircx + _dx_mid - 2), cut_y2), 1)
-    # 6. specular highlight arc
-    _hl_r = R - 4
-    if _hl_r > 0:
-        pygame.draw.arc(screen, ROTATE_HIGHLIGHT_COLOR,
-                        pygame.Rect(ircx - _hl_r, ircy - _hl_r, 2 * _hl_r, 2 * _hl_r),
-                        math.radians(45), math.radians(135), 2)
+    # ── Desenho do Círculo/Elipse (Diferenciado por tamanho) ──────────# ── Configuração de Escala do Seletor ─────────────────────────────
+    # Aplicamos o achatamento apenas se for o tabuleiro de 10
+    scale_w, scale_h = (0.9, 0.7) if total_slots == 10 else (1.0, 1.0)
+    
+    R_w = int(R * scale_w)
+    R_h = int(R * scale_h)
 
-    # ── border arc where the circle exits the board ───────────────────
-    _arc_r = R + b_border // 2
-    arc_rect = pygame.Rect(
-        ircx - _arc_r, ircy - _arc_r, 2 * _arc_r, 2 * _arc_r,
-    )
-    d_top = ircy - board_rect.top
-    d_bot = board_rect.bottom - ircy
-    d_left = ircx - board_rect.left
-    d_right = board_rect.right - ircx
+    # ── arc-band helper (Atualizado para Elipse) ──────────────────────
+    def _arc_band_elipse(y_top: int, y_bot: int) -> list:
+        # Ajustamos a matemática para considerar raios diferentes em X e Y
+        dy_t = max(-R_h, min(R_h, ircy - y_top))
+        dy_b = max(-R_h, min(R_h, ircy - y_bot))
+        
+        # Equação da elipse: (x/Rw)^2 + (y/Rh)^2 = 1  => x = Rw * sqrt(1 - (y/Rh)^2)
+        dx_t = R_w * math.sqrt(max(0.0, 1.0 - (dy_t / R_h)**2)) if R_h else 0
+        dx_b = R_w * math.sqrt(max(0.0, 1.0 - (dy_b / R_h)**2)) if R_h else 0
+        
+        th_t = math.asin(dy_t / R_h) if R_h else 0
+        th_b = math.asin(dy_b / R_h) if R_h else 0
+        
+        pts = [(ircx - dx_b, y_bot), (ircx + dx_b, y_bot)]
+        for i in range(1, _N_ARC):
+            th = th_b + (th_t - th_b) * i / _N_ARC
+            pts.append((ircx + R_w * math.cos(th), ircy - R_h * math.sin(th)))
+        pts += [(ircx + dx_t, y_top), (ircx - dx_t, y_top)]
+        for i in range(1, _N_ARC):
+            th = (math.pi - th_t) + (th_t - th_b) * i / _N_ARC
+            pts.append((ircx + R_w * math.cos(th), ircy - R_h * math.sin(th)))
+        return pts
+
+    # Recalcular posições dos cortes baseadas na altura da elipse (R_h)
+    cut_y1 = int(ircy - _cut_fracs[0] * R_h)
+    cut_y2 = int(ircy - _cut_fracs[1] * R_h)
+    cut_y3 = int(ircy - _cut_fracs[2] * R_h)
+
+    # 1. Sombra
+    s_rect = pygame.Rect(ircx - R_w, ircy - R_h, R_w * 2, R_h * 2).move(ROTATE_SHADOW_OFFSET, ROTATE_SHADOW_OFFSET)
+    pygame.draw.ellipse(screen, ROTATE_SHADOW_COLOR, s_rect)
+    
+    # 2. Base
+    sel_rect = pygame.Rect(ircx - R_w, ircy - R_h, R_w * 2, R_h * 2)
+    pygame.draw.ellipse(screen, ROTATE_CIRCLE_COLOR, sel_rect)
+    
+    # 3. Pills (Cortes Internos) - Agora usam a nova função elíptica
+    pygame.draw.polygon(screen, ROTATE_CUT_COLOR,  _arc_band_elipse(cut_y1, cut_y2))
+    pygame.draw.polygon(screen, ROTATE_CUT_SHADOW, _arc_band_elipse(cut_y2, cut_y3))
+
+    # 4. Divider Highlight
+    dy_mid = max(-R_h, min(R_h, ircy - cut_y2))
+    dx_mid = R_w * math.sqrt(max(0.0, 1.0 - (dy_mid / R_h)**2)) if R_h else 0
+    pygame.draw.line(screen, ROTATE_CUT_HIGHLIGHT, (int(ircx - dx_mid + 2), cut_y2), (int(ircx + dx_mid - 2), cut_y2), 1)
+
+    # 5. Specular highlight (Acompanha a curvatura da elipse)
+    hl_rect = sel_rect.inflate(-8, -8)
+    if hl_rect.width > 0:
+        pygame.draw.arc(screen, ROTATE_HIGHLIGHT_COLOR, hl_rect, math.radians(45), math.radians(135), 2)
+
+    # ── border arc (Agora também é uma Elipse!) ──────────────────────
+    # Usamos o mesmo sel_rect mas com a espessura da borda
+    arc_rect = sel_rect.inflate(b_border, b_border)
+    
+    # Detetar qual o lado do board que a elipse toca
+    d_top, d_bot = ircy - board_rect.top, board_rect.bottom - ircy
+    d_left, d_right = ircx - board_rect.left, board_rect.right - ircx
     min_d = min(d_top, d_bot, d_left, d_right)
 
-    if min_d == d_top and d_top < _arc_r:
-        ratio = max(-1.0, min(1.0, d_top / _arc_r))
-        a = math.asin(ratio)
-        a = max(0.0, a - math.radians(2))
-        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect,
-                        a, math.pi - a, b_border)
-    elif min_d == d_right and d_right < _arc_r:
-        ratio = max(-1.0, min(1.0, d_right / _arc_r))
-        a = math.acos(ratio)
-        a = max(0.0, a - math.radians(2))
-        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect,
-                        -a, a, b_border)
-    elif min_d == d_bot and d_bot < _arc_r:
-        ratio = max(-1.0, min(1.0, d_bot / _arc_r))
-        a = math.asin(ratio)
-        a = max(0.0, a - math.radians(2))
-        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect,
-                        math.pi + a, 2 * math.pi - a, b_border)
-    elif min_d == d_left and d_left < _arc_r:
-        ratio = max(-1.0, min(1.0, d_left / _arc_r))
-        a = math.acos(ratio)
-        a = max(0.0, a - math.radians(2))
-        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect,
-                        math.pi - a, math.pi + a, b_border)
+    # Desenha a borda cinzenta apenas no lado correto, seguindo a elipse
+    if min_d == d_top and d_top < R_h + b_border:
+        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, 0, math.pi, b_border)
+    elif min_d == d_right and d_right < R_w + b_border:
+        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, -math.pi/2, math.pi/2, b_border)
+    elif min_d == d_bot and d_bot < R_h + b_border:
+        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, math.pi, 2 * math.pi, b_border)
+    elif min_d == d_left and d_left < R_w + b_border:
+        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, math.pi/2, 3*math.pi/2, b_border)
+
+    # ── border arc where the circle exits the board ───────────────────
+    # ── border arc (Apenas para o tabuleiro de 20) ───────────────────
+    # Removemos o desenho da borda cinzenta se for o tabuleiro de 10
+    if total_slots != 10:
+        _arc_r = R + b_border // 2
+        arc_rect = pygame.Rect(ircx - _arc_r, ircy - _arc_r, 2 * _arc_r, 2 * _arc_r)
+        
+        d_top = ircy - board_rect.top
+        d_bot = board_rect.bottom - ircy
+        d_left = ircx - board_rect.left
+        d_right = board_rect.right - ircx
+        min_d = min(d_top, d_bot, d_left, d_right)
+
+        if min_d == d_top and d_top < _arc_r:
+            ratio = max(-1.0, min(1.0, d_top / _arc_r))
+            a = math.asin(ratio)
+            pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, a, math.pi - a, b_border)
+        elif min_d == d_right and d_right < _arc_r:
+            ratio = max(-1.0, min(1.0, d_right / _arc_r))
+            a = math.acos(ratio)
+            pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, -a, a, b_border)
+        elif min_d == d_bot and d_bot < _arc_r:
+            ratio = max(-1.0, min(1.0, d_bot / _arc_r))
+            a = math.asin(ratio)
+            pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, math.pi + a, 2 * math.pi - a, b_border)
+        elif min_d == d_left and d_left < _arc_r:
+            ratio = max(-1.0, min(1.0, d_left / _arc_r))
+            a = math.acos(ratio)
+            pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, math.pi - a, math.pi + a, b_border)
 
     # ── board border rim ──────────────────────────────────────────────
     pygame.draw.rect(screen, BOARD_BORDER_COLOR, board_rect,
