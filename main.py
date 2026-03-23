@@ -186,9 +186,9 @@ def main() -> None:
             screen.blit(moves_txt, (16, 16))
 
             if state == "solving":
-                spin_font = pygame.font.SysFont("Arial", 34, bold=True)
+                spin_font = pygame.font.SysFont("Arial", 28, bold=True)
                 spin = spin_font.render(f"Solving with {menu.selected_algo}...", True, (55, 108, 192))
-                screen.blit(spin, spin.get_rect(centerx=sw // 2, centery=sh // 2))
+                screen.blit(spin, spin.get_rect(centerx=sw // 2, top=sh * 3 // 4))
 
             if state == "animating":
                 info_font = pygame.font.SysFont("Arial", 22, bold=True)
