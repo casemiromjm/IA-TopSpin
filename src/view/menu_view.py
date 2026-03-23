@@ -23,13 +23,13 @@ START_COLOR     = (60, 160, 80)
 START_HOVER     = (50, 190, 75)
 START_TEXT      = (255, 255, 255)
 
-BTN_W      = 120
+BTN_W      = 110
 BTN_H      = 42
-BTN_GAP    = 14
+BTN_GAP    = 40
 BTN_RADIUS = 10
 START_W    = 200
 START_H    = 52
-ROW_GAP    = 72
+ROW_GAP    = 90
 
 _fonts: dict = {}
 

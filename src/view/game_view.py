@@ -7,49 +7,52 @@ SCALE_FACTOR: int = 1
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 BACKGROUND_COLOR: str = "antiquewhite1"
-BOARD_COLOR: tuple  = (130, 135, 145)
-BOARD_DEPTH_COLOR: tuple       = (60, 62, 68)
+
+BOARD_COLOR: tuple        = (130, 135, 145)
+BOARD_DEPTH_COLOR: tuple  = (60, 62, 68)
 BOARD_BORDER_COLOR: tuple = (210, 215, 220)
-SLOTS_COLOR: tuple = (255, 210, 50)
-SLOT_SHADOW_COLOR: tuple = (150, 110, 0)
+
+SLOTS_COLOR: tuple          = (255, 210, 50)
+SLOT_SHADOW_COLOR: tuple    = (150, 110, 0)
 SLOT_HIGHLIGHT_COLOR: tuple = (255, 245, 160)
-SLOT_TEXT_COLOR: tuple = (70, 40, 0)
-ROTATE_CIRCLE_COLOR: tuple = (55, 108, 192)
-ROTATE_SHADOW_COLOR: tuple = (20, 40, 80)
+SLOT_TEXT_COLOR: tuple      = (70, 40, 0)
+
+ROTATE_CIRCLE_COLOR: tuple    = (55, 108, 192)
+ROTATE_SHADOW_COLOR: tuple    = (20, 40, 80)
 ROTATE_HIGHLIGHT_COLOR: tuple = (130, 180, 245)
-ROTATE_CUT_COLOR: tuple = (22, 48, 92)          # deep pit (top cut)
-ROTATE_CUT_HIGHLIGHT: tuple = (85, 140, 220)    # light catching a cut edge
-ROTATE_CUT_SHADOW: tuple = (10, 25, 52)         # deeper pit (bottom cut)
+ROTATE_CUT_COLOR: tuple       = (22, 48, 92)    # deep pit (top cut)
+ROTATE_CUT_HIGHLIGHT: tuple   = (85, 140, 220)  # light catching a cut edge
+ROTATE_CUT_SHADOW: tuple      = (10, 25, 52)    # deeper pit (bottom cut)
 
 ROTATE_WINDOW_COLOR: tuple = (255, 100, 80)     # tint for rotate-zone slots
 
 # ── Board shape ───────────────────────────────────────────────────────────────
-BOARD_WIDTH: int = 700          # base width in pixels (scaled by SCALE_FACTOR)
-BOARD_ASPECT: float = 2.0       # width / height ratio
-BOARD_CORNER_RADIUS: int = 210  # rounded-rect corner radius (capped to half-extents)
-BOARD_BORDER: int = 10          # rim stroke width
+BOARD_WIDTH: int        = 700    # base width in pixels (scaled by SCALE_FACTOR)
+BOARD_ASPECT: float     = 2.0    # width / height ratio
+BOARD_CORNER_RADIUS: int = 210   # rounded-rect corner radius (capped to half-extents)
+BOARD_BORDER: int       = 10     # rim stroke width
 
 # ── Board 3-D depth ──────────────────────────────────────────────────────────
 BOARD_DEPTH_Y: int = 30
 BOARD_DEPTH_X: int = 0
 
 # ── Slots (balls on the track) ───────────────────────────────────────────────
-TOTAL_SLOTS: int = 20
-SLOTS_SIZE: int = 30
-SLOT_TRACK_INSET: float = 50.0
-SLOT_START_OFFSET: float = 0.044
-SLOT_SHADOW_OFFSET: int = 4
+TOTAL_SLOTS: int         = 20
+SLOTS_SIZE: int          = 30     # ball radius
+SLOT_TRACK_INSET: float  = 50.0   # inset from board edge to track centre-line
+SLOT_START_OFFSET: float = 0.044  # fraction along perimeter where slot 0 sits
+SLOT_SHADOW_OFFSET: int  = 4      # shadow drop (pixels)
 
 # ── Rotate circle ────────────────────────────────────────────────────────────
-ROTATE_SHADOW_OFFSET: int = 1
+ROTATE_SHADOW_OFFSET: int = 1     # shadow drop (pixels)
 
-# ── Scaled values ──────────────────────────────────────────────
-_BOARD_WIDTH: float = BOARD_WIDTH * SCALE_FACTOR
-_BOARD_BORDER: int = max(1, round(BOARD_BORDER * SCALE_FACTOR))
-_BOARD_DEPTH_Y: int = round(BOARD_DEPTH_Y * SCALE_FACTOR)
-_BOARD_DEPTH_X: int = round(BOARD_DEPTH_X * SCALE_FACTOR)
-_SLOTS_SIZE: int = round(SLOTS_SIZE * SCALE_FACTOR)
-_SLOT_TRACK_INSET: float = SLOT_TRACK_INSET * SCALE_FACTOR
+# ── Scaled values (do not edit) ──────────────────────────────────────────────
+_BOARD_WIDTH: float      = BOARD_WIDTH   * SCALE_FACTOR
+_BOARD_BORDER: int       = max(1, round(BOARD_BORDER * SCALE_FACTOR))
+_BOARD_DEPTH_Y: int      = round(BOARD_DEPTH_Y  * SCALE_FACTOR)
+_BOARD_DEPTH_X: int      = round(BOARD_DEPTH_X  * SCALE_FACTOR)
+_SLOTS_SIZE: int         = round(SLOTS_SIZE      * SCALE_FACTOR)
+_SLOT_TRACK_INSET: float = SLOT_TRACK_INSET      * SCALE_FACTOR
 
 # Legacy alias
 BOARD_DEPTH = _BOARD_DEPTH_Y
@@ -63,8 +66,11 @@ BOARD_DEPTH = _BOARD_DEPTH_Y
 # gap_bias:     where the circle edge crosses the track between adjacent balls
 #               (0.5 = midpoint, <0.5 = closer to the window ball)
 _SIZE_DISPLAY: dict[int, dict] = {
-    10: {"aspect": 1.5, "slot_start": 0.922, "push_factor": 0.15, "corner_mult": 1.5, "gap_bias": 0.35},
-    20: {"aspect": 2.0, "slot_start": 0.044, "push_factor": 0.15, "corner_mult": 1.0, "gap_bias": 0.35},
+    #              cut_fracs: [top, mid, bot] as (ircy - y) / R  (positive = above circle centre)
+    10: {"aspect": 1.2, "slot_start": 0.924, "push_factor": 0.30, "corner_mult": 1.0, "gap_bias": 0.35,
+         "cut_fracs": [0.20, 0.0, -0.25]},
+    20: {"aspect": 2.0, "slot_start": 0.044, "push_factor": 0.15, "corner_mult": 1.0, "gap_bias": 0.35,
+         "cut_fracs": [0.14, 0.0, -0.29]},
 }
 
 # ── Font cache ────────────────────────────────────────────────────────────────
@@ -157,6 +163,7 @@ def draw_frame(
     _push_factor = cfg["push_factor"]
     _corner_mult = cfg.get("corner_mult", 1.0)
     _gap_bias = cfg.get("gap_bias", 0.35)
+    _cut_fracs = cfg.get("cut_fracs", [0.14, 0.0, -0.29])
 
     # ── dynamic scaling based on slot count ────────────────────────────
     s = 0.4 + 0.6 * (total_slots / 20)
@@ -266,29 +273,52 @@ def draw_frame(
 
     ircx, ircy = int(rcx), int(rcy)
 
-    # Shadow
-    pygame.draw.circle(
-        screen, ROTATE_SHADOW_COLOR,
-        (ircx + ROTATE_SHADOW_OFFSET, ircy + ROTATE_SHADOW_OFFSET), R,
-    )
-    # Body
+    # ── arc-band helper: horizontal band clipped to the circle arc ────
+    _N_ARC = 32
+
+    def _arc_band(y_top: int, y_bot: int) -> list:
+        dy_t = max(-R, min(R, ircy - y_top))
+        dy_b = max(-R, min(R, ircy - y_bot))
+        dx_t = math.sqrt(max(0.0, R * R - dy_t * dy_t))
+        dx_b = math.sqrt(max(0.0, R * R - dy_b * dy_b))
+        th_t = math.asin(dy_t / R)
+        th_b = math.asin(dy_b / R)
+        pts = [(ircx - dx_b, y_bot), (ircx + dx_b, y_bot)]
+        for i in range(1, _N_ARC):
+            th = th_b + (th_t - th_b) * i / _N_ARC
+            pts.append((ircx + R * math.cos(th), ircy - R * math.sin(th)))
+        pts += [(ircx + dx_t, y_top), (ircx - dx_t, y_top)]
+        for i in range(1, _N_ARC):
+            th = (math.pi - th_t) + (th_t - th_b) * i / _N_ARC
+            pts.append((ircx + R * math.cos(th), ircy - R * math.sin(th)))
+        return pts
+
+    # Cut y-positions from per-size fractions of R
+    cut_y1 = int(ircy - _cut_fracs[0] * R)
+    cut_y2 = int(ircy - _cut_fracs[1] * R)
+    cut_y3 = int(ircy - _cut_fracs[2] * R)
+
+    # 1. drop shadow
+    pygame.draw.circle(screen, ROTATE_SHADOW_COLOR,
+                       (ircx + ROTATE_SHADOW_OFFSET, ircy + ROTATE_SHADOW_OFFSET), R)
+    # 2. solid base
     pygame.draw.circle(screen, ROTATE_CIRCLE_COLOR, (ircx, ircy), R)
-    # Highlight arc
+    # 3. top cut band
+    pygame.draw.polygon(screen, ROTATE_CUT_COLOR,  _arc_band(cut_y1, cut_y2))
+    # 4. bottom cut band
+    pygame.draw.polygon(screen, ROTATE_CUT_SHADOW, _arc_band(cut_y2, cut_y3))
+    # 5. divider highlight
+    _dy_mid = max(-R, min(R, ircy - cut_y2))
+    _dx_mid = math.sqrt(max(0.0, R * R - _dy_mid * _dy_mid))
+    pygame.draw.line(screen, ROTATE_CUT_HIGHLIGHT,
+                     (int(ircx - _dx_mid + 2), cut_y2),
+                     (int(ircx + _dx_mid - 2), cut_y2), 1)
+    # 6. specular highlight arc
     _hl_r = R - 4
     if _hl_r > 0:
-        pygame.draw.arc(
-            screen, ROTATE_HIGHLIGHT_COLOR,
-            pygame.Rect(ircx - _hl_r, ircy - _hl_r, 2 * _hl_r, 2 * _hl_r),
-            math.radians(35), math.radians(145), 2,
-        )
-
-    # ── cut-in: redraw inner layers so circle only shows in the groove ──
-    pygame.draw.rect(screen, BOARD_DEPTH_COLOR, depth_rect,
-                     border_radius=b_corner_r)
-    pygame.draw.rect(screen, BOARD_COLOR, depth_inner,
-                     border_radius=b_corner_r)
-    pygame.draw.rect(screen, BOARD_BORDER_COLOR, inner_rect,
-                     border_radius=b_corner_r)
+        pygame.draw.arc(screen, ROTATE_HIGHLIGHT_COLOR,
+                        pygame.Rect(ircx - _hl_r, ircy - _hl_r, 2 * _hl_r, 2 * _hl_r),
+                        math.radians(45), math.radians(135), 2)
 
     # ── border arc where the circle exits the board ───────────────────
     _arc_r = R + b_border // 2
