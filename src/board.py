@@ -74,3 +74,25 @@ class Board:
 
     def __repr__(self) -> str:
         return f"Board({list(self.slots)}, moves={self.moves})"
+
+    # ── functional interface for search algorithms ─────────────────────────
+
+    def is_goal(self, state: tuple[int, ...]) -> bool:
+        """Check if a tuple state is the goal (1..n in order from any start)."""
+        n = len(state)
+        try:
+            start = state.index(1)
+        except ValueError:
+            return False
+        return all(state[(start + i) % n] == i + 1 for i in range(n))
+
+    def get_child_states(
+        self, state: tuple[int, ...]
+    ) -> list[tuple[tuple[int, ...], int]]:
+        """Return successor states for search algorithms."""
+        left = state[1:] + (state[0],)
+        right = (state[-1],) + state[:-1]
+        lst = list(state)
+        lst[: self.rotate_size] = lst[: self.rotate_size][::-1]
+        rotated = tuple(lst)
+        return [(left, 1), (right, 1), (rotated, 1)]
