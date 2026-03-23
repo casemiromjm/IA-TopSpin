@@ -1,45 +1,76 @@
-from random import shuffle
-from collections import deque
+from __future__ import annotations
 
-import utils
+from collections import deque
+from copy import deepcopy
+from random import shuffle
 
 
 class Board:
+    """Top Spin board: a circular track of numbered slots with a rotate window."""
+
     slots: deque[int]
     moves: int
+    rotate_size: int  # how many front slots the mechanism flips
 
-    def __init__(self):
-        # initialize the board with the shuffled slots
-        self.slots = deque([x for x in range(1, 21)])
-        shuffle(self.slots)
+    def __init__(self, size: int = 20, rotate_size: int = 4,
+                 config: list[int] | None = None):
+        """Create a board.
 
+        *size*: number of slots (ignored when *config* is provided).
+        *rotate_size*: how many leading slots the rotate action flips.
+        *config*: explicit starting permutation; if None a random shuffle is used.
+        """
+        if config is not None:
+            self.slots = deque(config)
+        else:
+            self.slots = deque(range(1, size + 1))
+            shuffle(self.slots)
+
+        self.rotate_size = rotate_size
         self.moves = 0
 
-    def rotate(self):
-        """rotate 4 slots. consider that the 4 slots able to rotate are always at the beginning of the array (deque) for simplicity"""
-        self.slots[0], self.slots[3] = self.slots[3], self.slots[0]
-        self.slots[1], self.slots[2] = self.slots[2], self.slots[1]
+    # ── actions ───────────────────────────────────────────────────────────
 
-    def move_right(self):
+    def rotate(self) -> None:
+        """Reverse the first *rotate_size* slots in place."""
+        window = list(self.slots)[:self.rotate_size]
+        window.reverse()
+        for i, v in enumerate(window):
+            self.slots[i] = v
+        self.moves += 1
+
+    def move_right(self) -> None:
+        """Shift the whole track one position clockwise."""
         self.slots.rotate(1)
-
         self.moves += 1
 
-    def move_left(self):
+    def move_left(self) -> None:
+        """Shift the whole track one position counter-clockwise."""
         self.slots.rotate(-1)
-
         self.moves += 1
 
+    # ── queries ───────────────────────────────────────────────────────────
 
-def main() -> None:
-    """function for simple testing"""
-    b: Board = Board()
-    print(b.slots)
-    b.rotate()
-    print(b.slots)
+    def is_solved(self) -> bool:
+        """True when the slots form an ascending cyclic sequence (any rotation)."""
+        n = len(self.slots)
+        lst = list(self.slots)
+        # find the position of value 1
+        try:
+            start = lst.index(1)
+        except ValueError:
+            return False
+        for i in range(n):
+            if lst[(start + i) % n] != i + 1:
+                return False
+        return True
 
-    print(utils.checkWinner(b))
+    def copy(self) -> Board:
+        return deepcopy(self)
 
+    def state_key(self) -> tuple[int, ...]:
+        """Hashable snapshot for visited-set membership."""
+        return tuple(self.slots)
 
-if __name__ == "__main__":
-    main()
+    def __repr__(self) -> str:
+        return f"Board({list(self.slots)}, moves={self.moves})"
