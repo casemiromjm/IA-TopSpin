@@ -179,8 +179,19 @@ def draw_frame(
     board_rect = pygame.Rect(0, 0, int(bw), int(bh))
     board_rect.center = screen_center
 
-    inner_w = bw - 2 * (b_inset + _SLOTS_SIZE) - b_border
-    inner_h = bh - 2 * (b_inset + _SLOTS_SIZE) - b_border
+    # track geometry computed early so inner rect can match actual ball size
+    cx, cy = board_rect.center
+    hw = bw / 2.0 - b_inset
+    hh = bh / 2.0 - b_inset
+    slot_corner_r = b_corner_r - b_inset
+    _r = min(slot_corner_r, int(hw), int(hh))
+    _track_perimeter = 4 * (hw - _r + hh - _r) + 2 * math.pi * _r
+    _ball_r = max(max(8, int(_SLOTS_SIZE * s * 0.8)),
+                  min(int(b_inset * 0.75),
+                      int(_track_perimeter * 0.45 / total_slots)))
+
+    inner_w = bw - 2 * (b_inset + _ball_r) - b_border
+    inner_h = bh - 2 * (b_inset + _ball_r) - b_border
     inner_rect = pygame.Rect(0, 0, int(inner_w), int(inner_h))
     inner_rect.center = screen_center
 
@@ -211,17 +222,7 @@ def draw_frame(
     pygame.draw.rect(screen, BOARD_COLOR, depth_inner, border_radius=b_corner_r)
     pygame.draw.rect(screen, BOARD_BORDER_COLOR, inner_rect, border_radius=b_corner_r)
 
-    # ── slot track geometry ───────────────────────────────────────────
-    cx, cy = board_rect.center
-    hw = bw / 2.0 - b_inset
-    hh = bh / 2.0 - b_inset
-    slot_corner_r = b_corner_r - b_inset
-
-    _r = min(slot_corner_r, int(hw), int(hh))
-    _track_perimeter = 4 * (hw - _r + hh - _r) + 2 * math.pi * _r
-    _ball_r = max(_SLOTS_SIZE,
-                  min(int(b_inset * 0.90),
-                      int(_track_perimeter * 0.40 / total_slots)))
+    # ── slot track geometry (cx, cy, hw, hh, slot_corner_r, _ball_r computed above) ──
 
     # ── rotate circle (all sizes) ─────────────────────────────────────
     # The circle boundary passes through two "gap" points on the track:
