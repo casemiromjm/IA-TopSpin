@@ -174,18 +174,7 @@ def draw_frame(
     b_depth_x = int(_BOARD_DEPTH_X * s)
     b_corner_r = int(BOARD_CORNER_RADIUS * s * _corner_mult)
 
-    # ── ball size (first pass with standard inset, then snug inset) ───
-    # Step 1: estimate perimeter using the standard inset
-    _b0 = _SLOT_TRACK_INSET * s
-    _hw0, _hh0 = bw / 2.0 - _b0, bh / 2.0 - _b0
-    _sc0 = b_corner_r - _b0
-    _r0 = min(_sc0, int(_hw0), int(_hh0))
-    _perim0 = 4 * (_hw0 - _r0 + _hh0 - _r0) + 2 * math.pi * _r0
-    _ball_r = max(max(8, int(_SLOTS_SIZE * s * 0.8)),
-                  min(int(_b0 * 0.75),
-                      int(_perim0 * 0.48 / total_slots)))
-    # Step 2: snug groove — inset = ball radius + small outer margin
-    b_inset = _ball_r + 8
+    b_inset = _SLOT_TRACK_INSET * s
 
     # ── board layout rects ────────────────────────────────────────────
     board_rect = pygame.Rect(0, 0, int(bw), int(bh))
@@ -195,7 +184,15 @@ def draw_frame(
     hw = bw / 2.0 - b_inset
     hh = bh / 2.0 - b_inset
     slot_corner_r = b_corner_r - b_inset
-    # inner rect: ball center + ball radius + 4px inner clearance
+
+    # ball radius: cap at 70% of b_inset so outer edge stays inside the border
+    _r0 = min(slot_corner_r, int(hw), int(hh))
+    _perim0 = 4 * (hw - _r0 + hh - _r0) + 2 * math.pi * _r0
+    _ball_r = max(max(8, int(_SLOTS_SIZE * s * 0.8)),
+                  min(int(b_inset * 0.70),
+                      int(_perim0 * 0.48 / total_slots)))
+
+    # inner rect: ball center + ball radius + 4 px clearance on inner side
     inner_w = bw - 2 * (b_inset + _ball_r + 4) - b_border
     inner_h = bh - 2 * (b_inset + _ball_r + 4) - b_border
     inner_rect = pygame.Rect(0, 0, int(inner_w), int(inner_h))
