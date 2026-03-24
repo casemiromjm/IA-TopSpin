@@ -58,6 +58,24 @@ The game consists of 20 rounded pieces, numbered from 1 to 20, placed in one lon
 
 == Current Implementation
 
-Our implementation is being done in Python 3.12. It uses _#link("https://docs.astral.sh/uv/", "UV")_ for project management (i.e. handling virtual environments, handling dependencies, etc.). We also use _pygame_ for UI and _ruff_ for linting and formatting our code. In addition to that, we utilize _#link("https://github.com/casey/just", "Just")_, a tool similar to Makefile but more modern.
+*Architecture (MVC-like):*
 
-As for data structures, we utilize a *list* for our board, a *tuple* for a state.
+#align(center)[
+  #table(
+    columns: 3,
+    align: (center, center, center),
+    fill: (_, row) => if row == 1 { rgb("#E8F4F8") } else { white },
+    [*UI Layer*], [*Logic Layer*], [*Data Layer*],
+    [main.py \n Pygame], [Board], [TreeNode],
+    [menu_view \n game_view], [Search Algorithms],
+  )
+]
+
+*Data Flow:*
+1. User selects board config and algorithm via menu
+2. `main.py` builds a `Board` instance and starts solver in background thread
+3. `Board` provides child states and goal test to search algorithms
+4. Search algorithms build a tree of `TreeNode`s to find solution
+5. Solution moves are animated on screen via `_Pygame_`
+
+*Search Algorithms:* BFS, DFS, Iterative Deepening Search (run in background thread)
