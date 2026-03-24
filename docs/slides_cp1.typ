@@ -43,15 +43,18 @@ The game consists of 20 rounded pieces, numbered from 1 to 20, placed in one lon
 
 == Problem Formulation
 
-states:
-
-initial state:
-
-objective test:
-
-operators: in Top Spin game there is 3 operators, `move_right`, `move_left`, `spin`. The `move` operators represents the slide to the right or the slide to the left. Lastly, the `spin` operator represents the spin made in the center circle that rotates the slots.
-
-heuristics / evaluation functions:
+- *State*: Represented using a `TreeNode` class containing:
+  - `state`: current board configuration (a tuple of 20 integers)
+  - `parent`: reference to the parent node
+  - `children`: list of child nodes
+- *Initial State*: `(1, 2, 3, ..., 20)` - a tuple representing the state of the pieces at the beginning of the game
+- *Objective Test*: Check if `state == (1, 2, 3, ..., 20)` (sorted order)
+- *Operators*:
+  - `move_left(state)`: Rotates the ring one position to the left
+  - `move_right(state)`: Rotates the ring one position to the right
+  - `spin(state)`: Reverses the first 4 elements (spin window)
+  - All operators have cost = 1
+- *Heuristics / Evaluation Functions*: TBD // TODO
 
 == Current Implementation
 
