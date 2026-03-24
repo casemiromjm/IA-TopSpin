@@ -85,7 +85,6 @@ def iterative_deepening_search(
     initial_state, goal_state_func, operators_func, max_depth=1000
 ):
     for depth in range(max_depth + 1):
-        print(f"Searching with depth limit: {depth}")
         root = TreeNode(initial_state)
         result = depth_limited_search(root, goal_state_func, operators_func, depth)
         if result:

@@ -1,59 +1,99 @@
-from typing import List, Tuple
+from __future__ import annotations
+
+from collections import deque
+from copy import deepcopy
+from random import shuffle
 
 
 class Board:
+    """Top Spin board: a circular track of numbered slots with a rotate window."""
+
+    slots: deque[int]
+    moves: int
+    rotate_size: int  # how many front slots the mechanism flips
+
     def __init__(
-        self,
-        size: int = 20,
-        spin_size: int = 4,
-        initial_state: Tuple[int, ...] | None = None,
-    ) -> None:
-        self.size = size
-        self.spin_size = spin_size
-        if initial_state is not None:
-            self._initial_state = initial_state
+        self, size: int = 20, rotate_size: int = 4, config: list[int] | None = None
+    ):
+        """Create a board.
+
+        *size*: number of slots (ignored when *config* is provided).
+        *rotate_size*: how many leading slots the rotate action flips.
+        *config*: explicit starting permutation; if None a random shuffle is used.
+        """
+        if config is not None:
+            self.slots = deque(config)
         else:
-            self._initial_state = tuple(range(1, size + 1))
-        self._goal_state = tuple(range(1, size + 1))
+            self.slots = deque(range(1, size + 1))
+            shuffle(self.slots)
 
-    @property
-    def initial_state(self) -> Tuple[int, ...]:
-        """Return the starting state for this board."""
-        return self._initial_state
+        self.rotate_size = rotate_size
+        self.moves = 0
 
-    @staticmethod
-    def move_left(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
-        """Rotate the ring one position to the left.
+    # ── actions ───────────────────────────────────────────────────────────
 
-        Example: (1, 2, 3) -> ((2, 3, 1), 1)
-        """
-        return state[1:] + (state[0],), 1
+    def rotate(self) -> None:
+        """Reverse the first *rotate_size* slots in place."""
+        window = list(self.slots)[: self.rotate_size]
+        window.reverse()
+        for i, v in enumerate(window):
+            self.slots[i] = v
+        self.moves += 1
 
-    @staticmethod
-    def move_right(state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
-        """Rotate the ring one position to the right.
+    def move_right(self) -> None:
+        """Shift the whole track one position clockwise."""
+        self.slots.rotate(1)
+        self.moves += 1
 
-        Example: (1, 2, 3) -> ((3, 1, 2), 1)
-        """
-        return (state[-1],) + state[:-1], 1
+    def move_left(self) -> None:
+        """Shift the whole track one position counter-clockwise."""
+        self.slots.rotate(-1)
+        self.moves += 1
 
-    def spin(self, state: Tuple[int, ...]) -> Tuple[Tuple[int, ...], int]:
-        """Reverse the first `spin_size` elements (the spin window)."""
-        lst = list(state)
-        segment = lst[: self.spin_size]
-        lst[: self.spin_size] = segment[::-1]
-        return tuple(lst), 1
+    # ── queries ───────────────────────────────────────────────────────────
+
+    def is_solved(self) -> bool:
+        """True when the slots form an ascending cyclic sequence (any rotation)."""
+        n = len(self.slots)
+        lst = list(self.slots)
+        # find the position of value 1
+        try:
+            start = lst.index(1)
+        except ValueError:
+            return False
+        for i in range(n):
+            if lst[(start + i) % n] != i + 1:
+                return False
+        return True
+
+    def copy(self) -> Board:
+        return deepcopy(self)
+
+    def state_key(self) -> tuple[int, ...]:
+        """Hashable snapshot for visited-set membership."""
+        return tuple(self.slots)
+
+    def __repr__(self) -> str:
+        return f"Board({list(self.slots)}, moves={self.moves})"
+
+    # ── functional interface for search algorithms ─────────────────────────
+
+    def is_goal(self, state: tuple[int, ...]) -> bool:
+        """Check if a tuple state is the goal (1..n in order from any start)."""
+        n = len(state)
+        try:
+            start = state.index(1)
+        except ValueError:
+            return False
+        return all(state[(start + i) % n] == i + 1 for i in range(n))
 
     def get_child_states(
-        self, state: Tuple[int, ...]
-    ) -> List[Tuple[Tuple[int, ...], int]]:
-        """Return all successor states from applying each legal move once."""
-        return [
-            Board.move_left(state),
-            Board.move_right(state),
-            self.spin(state),
-        ]
-
-    def is_goal(self, state: Tuple[int, ...]) -> bool:
-        """Check if the state is sorted from 1 to `size` for this board."""
-        return state == self._goal_state
+        self, state: tuple[int, ...]
+    ) -> list[tuple[tuple[int, ...], int]]:
+        """Return successor states for search algorithms."""
+        left = state[1:] + (state[0],)
+        right = (state[-1],) + state[:-1]
+        lst = list(state)
+        lst[: self.rotate_size] = lst[: self.rotate_size][::-1]
+        rotated = tuple(lst)
+        return [(left, 1), (right, 1), (rotated, 1)]
