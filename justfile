@@ -22,3 +22,4 @@ format:
 [group: 'docs']
 build:
     @typst compile docs/slides_cp1.typ
+
