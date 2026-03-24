@@ -21,4 +21,4 @@ format:
 # Build Checkpoint 1 slides
 [group: 'docs']
 build:
-    @typst compile /docs/slides_cp1.typ
+    @typst compile docs/slides_cp1.typ
