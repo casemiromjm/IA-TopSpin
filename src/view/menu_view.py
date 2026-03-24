@@ -11,26 +11,26 @@ SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
 ALGOS = ["Human", "BFS", "DFS", "IDS"]
 
-BG_COLOR        = "antiquewhite1"
-TITLE_COLOR     = (45, 95, 180)
-SUBTITLE_COLOR  = (100, 100, 110)
-LABEL_COLOR     = (60, 60, 65)
-BTN_COLOR       = (210, 215, 220)
+BG_COLOR = "antiquewhite1"
+TITLE_COLOR = (45, 95, 180)
+SUBTITLE_COLOR = (100, 100, 110)
+LABEL_COLOR = (60, 60, 65)
+BTN_COLOR = (210, 215, 220)
 BTN_HOVER_COLOR = (180, 195, 220)
-BTN_SEL_COLOR   = (55, 108, 192)
-BTN_TEXT_COLOR  = (50, 50, 55)
-BTN_TEXT_SEL    = (255, 255, 255)
-START_COLOR     = (60, 160, 80)
-START_HOVER     = (50, 190, 75)
-START_TEXT      = (255, 255, 255)
+BTN_SEL_COLOR = (55, 108, 192)
+BTN_TEXT_COLOR = (50, 50, 55)
+BTN_TEXT_SEL = (255, 255, 255)
+START_COLOR = (60, 160, 80)
+START_HOVER = (50, 190, 75)
+START_TEXT = (255, 255, 255)
 
-BTN_W      = 110
-BTN_H      = 42
-BTN_GAP    = 40
+BTN_W = 110
+BTN_H = 42
+BTN_GAP = 40
 BTN_RADIUS = 10
-START_W    = 200
-START_H    = 52
-ROW_GAP    = 90
+START_W = 200
+START_H = 52
+ROW_GAP = 90
 
 _fonts: dict = {}
 
@@ -46,10 +46,10 @@ def _font(name: str, size: int, bold: bool = False) -> pygame.freetype.Font:
 
 class MenuState:
     def __init__(self):
-        self.size: int = 1        # index into SIZES (default: 20)
+        self.size: int = 1  # index into SIZES (default: 20)
         self.difficulty: int = 0  # index into DIFFICULTIES
-        self.board_num: int = 0   # 0-based within difficulty
-        self.algo: int = 0        # index into ALGOS
+        self.board_num: int = 0  # 0-based within difficulty
+        self.algo: int = 0  # index into ALGOS
 
     @property
     def selected_size(self) -> int:
@@ -105,12 +105,16 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
     # size row
     _s, _ = lbl_font.render("Size", LABEL_COLOR)
     screen.blit(_s, _s.get_rect(centerx=cx, top=base_y - 28))
-    size_rects = _button_row(screen, cx, base_y, [str(s) for s in SIZES], state.size, mouse)
+    size_rects = _button_row(
+        screen, cx, base_y, [str(s) for s in SIZES], state.size, mouse
+    )
 
     # difficulty row
     _d, _ = lbl_font.render("Difficulty", LABEL_COLOR)
     screen.blit(_d, _d.get_rect(centerx=cx, top=base_y + ROW_GAP - 28))
-    diff_rects = _button_row(screen, cx, base_y + ROW_GAP, DIFFICULTIES, state.difficulty, mouse)
+    diff_rects = _button_row(
+        screen, cx, base_y + ROW_GAP, DIFFICULTIES, state.difficulty, mouse
+    )
 
     # algorithm row
     _a, _ = lbl_font.render("Solver", LABEL_COLOR)
@@ -125,21 +129,35 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
         labels = [f"#{i}" for i in range(1, n + 1)]
         _b, _ = lbl_font.render("Board", LABEL_COLOR)
         screen.blit(_b, _b.get_rect(centerx=cx, top=y2 - 28))
-        board_rects = _button_row(screen, cx, y2, labels, state.board_num, mouse, btn_w=70)
+        board_rects = _button_row(
+            screen, cx, y2, labels, state.board_num, mouse, btn_w=70
+        )
         y2 += ROW_GAP
 
     # start button
     start_r = pygame.Rect(cx - START_W // 2, y2 + 10, START_W, START_H)
-    pygame.draw.rect(screen, START_HOVER if start_r.collidepoint(mouse) else START_COLOR,
-                     start_r, border_radius=14)
+    pygame.draw.rect(
+        screen,
+        START_HOVER if start_r.collidepoint(mouse) else START_COLOR,
+        start_r,
+        border_radius=14,
+    )
     stxt, _ = _font("Arial", 26, bold=True).render("START", START_TEXT)
     screen.blit(stxt, stxt.get_rect(center=start_r.center))
 
     # hint
-    hint, _ = _font("Arial", 15).render("← → shift    ↑ / R rotate    Q quit", SUBTITLE_COLOR)
+    hint, _ = _font("Arial", 15).render(
+        "← → shift    ↑ / R rotate    Q quit", SUBTITLE_COLOR
+    )
     screen.blit(hint, hint.get_rect(centerx=cx, top=start_r.bottom + 24))
 
-    return {"size": size_rects, "diff": diff_rects, "algo": algo_rects, "board": board_rects, "start": start_r}
+    return {
+        "size": size_rects,
+        "diff": diff_rects,
+        "algo": algo_rects,
+        "board": board_rects,
+        "start": start_r,
+    }
 
 
 def handle_menu_click(pos, rects, state: MenuState) -> bool:

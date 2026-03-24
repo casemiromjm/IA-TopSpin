@@ -48,7 +48,9 @@ def _solver_worker(board: Board, algo: str, result: dict) -> None:
     elif algo == "DFS":
         node = depth_first_search(initial, board.is_goal, board.get_child_states)
     else:  # IDS
-        node = iterative_deepening_search(initial, board.is_goal, board.get_child_states)
+        node = iterative_deepening_search(
+            initial, board.is_goal, board.get_child_states
+        )
 
     if node is None:
         result["moves"] = None
@@ -175,7 +177,8 @@ def main() -> None:
 
         elif board is not None:
             draw_frame(
-                screen, (sw, sh),
+                screen,
+                (sw, sh),
                 slots=list(board.slots),
                 total_slots=len(board.slots),
                 rotate_window=board.rotate_size,
@@ -187,14 +190,17 @@ def main() -> None:
 
             if state == "solving":
                 spin_font = pygame.font.SysFont("Arial", 28, bold=True)
-                spin = spin_font.render(f"Solving with {menu.selected_algo}...", True, (55, 108, 192))
+                spin = spin_font.render(
+                    f"Solving with {menu.selected_algo}...", True, (55, 108, 192)
+                )
                 screen.blit(spin, spin.get_rect(centerx=sw // 2, top=sh * 3 // 4))
 
             if state == "animating":
                 info_font = pygame.font.SysFont("Arial", 22, bold=True)
                 info = info_font.render(
                     f"{menu.selected_algo}  step {_solution_idx}/{len(_solution_moves)}",
-                    True, (55, 108, 192),
+                    True,
+                    (55, 108, 192),
                 )
                 screen.blit(info, info.get_rect(centerx=sw // 2, top=16))
 

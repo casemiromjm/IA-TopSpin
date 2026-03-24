@@ -8,51 +8,51 @@ SCALE_FACTOR: int = 1
 # ── Colors ────────────────────────────────────────────────────────────────────
 BACKGROUND_COLOR: str = "antiquewhite1"
 
-BOARD_COLOR: tuple        = (130, 135, 145)
-BOARD_DEPTH_COLOR: tuple  = (60, 62, 68)
+BOARD_COLOR: tuple = (130, 135, 145)
+BOARD_DEPTH_COLOR: tuple = (60, 62, 68)
 BOARD_BORDER_COLOR: tuple = (210, 215, 220)
 
-SLOTS_COLOR: tuple          = (255, 210, 50)
-SLOT_SHADOW_COLOR: tuple    = (150, 110, 0)
+SLOTS_COLOR: tuple = (255, 210, 50)
+SLOT_SHADOW_COLOR: tuple = (150, 110, 0)
 SLOT_HIGHLIGHT_COLOR: tuple = (255, 245, 160)
-SLOT_TEXT_COLOR: tuple      = (70, 40, 0)
+SLOT_TEXT_COLOR: tuple = (70, 40, 0)
 
-ROTATE_CIRCLE_COLOR: tuple    = (55, 108, 192)
-ROTATE_SHADOW_COLOR: tuple    = (20, 40, 80)
+ROTATE_CIRCLE_COLOR: tuple = (55, 108, 192)
+ROTATE_SHADOW_COLOR: tuple = (20, 40, 80)
 ROTATE_HIGHLIGHT_COLOR: tuple = (130, 180, 245)
-ROTATE_CUT_COLOR: tuple       = (22, 48, 92)    # deep pit (top cut)
-ROTATE_CUT_HIGHLIGHT: tuple   = (85, 140, 220)  # light catching a cut edge
-ROTATE_CUT_SHADOW: tuple      = (10, 25, 52)    # deeper pit (bottom cut)
+ROTATE_CUT_COLOR: tuple = (22, 48, 92)  # deep pit (top cut)
+ROTATE_CUT_HIGHLIGHT: tuple = (85, 140, 220)  # light catching a cut edge
+ROTATE_CUT_SHADOW: tuple = (10, 25, 52)  # deeper pit (bottom cut)
 
-ROTATE_WINDOW_COLOR: tuple = (255, 100, 80)     # tint for rotate-zone slots
+ROTATE_WINDOW_COLOR: tuple = (255, 100, 80)  # tint for rotate-zone slots
 
 # ── Board shape ───────────────────────────────────────────────────────────────
-BOARD_WIDTH: int        = 700    # base width in pixels (scaled by SCALE_FACTOR)
-BOARD_ASPECT: float     = 2.0    # width / height ratio
-BOARD_CORNER_RADIUS: int = 210   # rounded-rect corner radius (capped to half-extents)
-BOARD_BORDER: int       = 10     # rim stroke width
+BOARD_WIDTH: int = 700  # base width in pixels (scaled by SCALE_FACTOR)
+BOARD_ASPECT: float = 2.0  # width / height ratio
+BOARD_CORNER_RADIUS: int = 210  # rounded-rect corner radius (capped to half-extents)
+BOARD_BORDER: int = 10  # rim stroke width
 
 # ── Board 3-D depth ──────────────────────────────────────────────────────────
 BOARD_DEPTH_Y: int = 30
 BOARD_DEPTH_X: int = 0
 
 # ── Slots (balls on the track) ───────────────────────────────────────────────
-TOTAL_SLOTS: int         = 20
-SLOTS_SIZE: int          = 30     # ball radius
-SLOT_TRACK_INSET: float  = 50.0   # inset from board edge to track centre-line
+TOTAL_SLOTS: int = 20
+SLOTS_SIZE: int = 30  # ball radius
+SLOT_TRACK_INSET: float = 50.0  # inset from board edge to track centre-line
 SLOT_START_OFFSET: float = 0.044  # fraction along perimeter where slot 0 sits
-SLOT_SHADOW_OFFSET: int  = 4      # shadow drop (pixels)
+SLOT_SHADOW_OFFSET: int = 4  # shadow drop (pixels)
 
 # ── Rotate circle ────────────────────────────────────────────────────────────
-ROTATE_SHADOW_OFFSET: int = 1     # shadow drop (pixels)
+ROTATE_SHADOW_OFFSET: int = 1  # shadow drop (pixels)
 
 # ── Scaled values (do not edit) ──────────────────────────────────────────────
-_BOARD_WIDTH: float      = BOARD_WIDTH   * SCALE_FACTOR
-_BOARD_BORDER: int       = max(1, round(BOARD_BORDER * SCALE_FACTOR))
-_BOARD_DEPTH_Y: int      = round(BOARD_DEPTH_Y  * SCALE_FACTOR)
-_BOARD_DEPTH_X: int      = round(BOARD_DEPTH_X  * SCALE_FACTOR)
-_SLOTS_SIZE: int         = round(SLOTS_SIZE      * SCALE_FACTOR)
-_SLOT_TRACK_INSET: float = SLOT_TRACK_INSET      * SCALE_FACTOR
+_BOARD_WIDTH: float = BOARD_WIDTH * SCALE_FACTOR
+_BOARD_BORDER: int = max(1, round(BOARD_BORDER * SCALE_FACTOR))
+_BOARD_DEPTH_Y: int = round(BOARD_DEPTH_Y * SCALE_FACTOR)
+_BOARD_DEPTH_X: int = round(BOARD_DEPTH_X * SCALE_FACTOR)
+_SLOTS_SIZE: int = round(SLOTS_SIZE * SCALE_FACTOR)
+_SLOT_TRACK_INSET: float = SLOT_TRACK_INSET * SCALE_FACTOR
 
 # Legacy alias
 BOARD_DEPTH = _BOARD_DEPTH_Y
@@ -67,10 +67,22 @@ BOARD_DEPTH = _BOARD_DEPTH_Y
 #               (0.5 = midpoint, <0.5 = closer to the window ball)
 _SIZE_DISPLAY: dict[int, dict] = {
     #              cut_fracs: [top, mid, bot] as (ircy - y) / R  (positive = above circle centre)
-    10: {"aspect": 1.9, "slot_start": -0.017, "push_factor": 0.15, "corner_mult": 0.70, "gap_bias": 0.35,
-         "cut_fracs": [0.15, 0.03, -0.42]},
-    20: {"aspect": 2.0, "slot_start": 0.044, "push_factor": 0.15, "corner_mult": 1.0, "gap_bias": 0.35,
-         "cut_fracs": [0.14, 0.0, -0.4]},
+    10: {
+        "aspect": 1.9,
+        "slot_start": -0.017,
+        "push_factor": 0.15,
+        "corner_mult": 0.70,
+        "gap_bias": 0.35,
+        "cut_fracs": [0.15, 0.03, -0.42],
+    },
+    20: {
+        "aspect": 2.0,
+        "slot_start": 0.044,
+        "push_factor": 0.15,
+        "corner_mult": 1.0,
+        "gap_bias": 0.35,
+        "cut_fracs": [0.14, 0.0, -0.4],
+    },
 }
 
 # ── Font cache ────────────────────────────────────────────────────────────────
@@ -88,6 +100,7 @@ def _get_font(size: int) -> pygame.freetype.Font:
 
 # ── Geometry helpers ──────────────────────────────────────────────────────────
 
+
 def _rounded_rect_point(
     t: float, cx: float, cy: float, hw: float, hh: float, r: float
 ) -> tuple[float, float]:
@@ -97,13 +110,13 @@ def _rounded_rect_point(
     arc = math.pi / 2 * r
     segments = [
         (2 * sw, "top"),
-        (arc,    "arc_tr"),
+        (arc, "arc_tr"),
         (2 * sh, "right"),
-        (arc,    "arc_br"),
+        (arc, "arc_br"),
         (2 * sw, "bottom"),
-        (arc,    "arc_bl"),
+        (arc, "arc_bl"),
         (2 * sh, "left"),
-        (arc,    "arc_tl"),
+        (arc, "arc_tl"),
     ]
     total = sum(length for length, _ in segments)
     d = (t % 1.0) * total
@@ -135,8 +148,8 @@ def _rounded_rect_point(
     return (cx - sw, cy - hh)
 
 
-
 # ── Main draw routine ────────────────────────────────────────────────────────
+
 
 def draw_frame(
     screen: pygame.Surface,
@@ -188,9 +201,10 @@ def draw_frame(
     # ball radius: cap at 70% of b_inset so outer edge stays inside the border
     _r0 = min(slot_corner_r, int(hw), int(hh))
     _perim0 = 4 * (hw - _r0 + hh - _r0) + 2 * math.pi * _r0
-    _ball_r = max(max(8, int(_SLOTS_SIZE * s * 0.8)),
-                  min(int(b_inset * 0.70),
-                      int(_perim0 * 0.48 / total_slots)))
+    _ball_r = max(
+        max(8, int(_SLOTS_SIZE * s * 0.8)),
+        min(int(b_inset * 0.70), int(_perim0 * 0.48 / total_slots)),
+    )
 
     # inner rect: ball center + ball radius + 4 px clearance on inner side
     inner_w = bw - 2 * (b_inset + _ball_r + 4) - b_border
@@ -212,12 +226,16 @@ def draw_frame(
     if board_sw > 0:
         bx = float(board_rect.centerx)
         by = float(board_rect.bottom)
-        pygame.draw.polygon(screen, BOARD_DEPTH_COLOR, [
-            (bx - board_sw, by),
-            (bx + board_sw, by),
-            (bx + board_sw + b_depth_x, by + b_depth_y),
-            (bx - board_sw + b_depth_x, by + b_depth_y),
-        ])
+        pygame.draw.polygon(
+            screen,
+            BOARD_DEPTH_COLOR,
+            [
+                (bx - board_sw, by),
+                (bx + board_sw, by),
+                (bx + board_sw + b_depth_x, by + b_depth_y),
+                (bx - board_sw + b_depth_x, by + b_depth_y),
+            ],
+        )
 
     # ── top face layers ───────────────────────────────────────────────
     pygame.draw.rect(screen, BOARD_COLOR, board_rect, border_radius=b_corner_r)
@@ -235,7 +253,12 @@ def draw_frame(
     # Window ball positions (needed for centroid direction check)
     window_pts = [
         _rounded_rect_point(
-            slot_start + i / total_slots, cx, cy, hw, hh, slot_corner_r,
+            slot_start + i / total_slots,
+            cx,
+            cy,
+            hw,
+            hh,
+            slot_corner_r,
         )
         for i in range(rotate_window)
     ]
@@ -245,11 +268,19 @@ def draw_frame(
     # Gap points on the track (between window and non-window balls)
     gap1 = _rounded_rect_point(
         (slot_start - _gap_bias / total_slots) % 1.0,
-        cx, cy, hw, hh, slot_corner_r,
+        cx,
+        cy,
+        hw,
+        hh,
+        slot_corner_r,
     )
     gap2 = _rounded_rect_point(
         slot_start + (rotate_window - 1 + _gap_bias) / total_slots,
-        cx, cy, hw, hh, slot_corner_r,
+        cx,
+        cy,
+        hw,
+        hh,
+        slot_corner_r,
     )
 
     # Chord between gap points
@@ -305,7 +336,7 @@ def draw_frame(
     # ── Desenho do Círculo/Elipse (Diferenciado por tamanho) ──────────# ── Configuração de Escala do Seletor ─────────────────────────────
     # Aplicamos o achatamento apenas se for o tabuleiro de 10
     scale_w, scale_h = (0.9, 0.7) if total_slots == 10 else (1.0, 1.0)
-    
+
     R_w = int(R * scale_w)
     R_h = int(R * scale_h)
 
@@ -314,14 +345,14 @@ def draw_frame(
         # Ajustamos a matemática para considerar raios diferentes em X e Y
         dy_t = max(-R_h, min(R_h, ircy - y_top))
         dy_b = max(-R_h, min(R_h, ircy - y_bot))
-        
+
         # Equação da elipse: (x/Rw)^2 + (y/Rh)^2 = 1  => x = Rw * sqrt(1 - (y/Rh)^2)
-        dx_t = R_w * math.sqrt(max(0.0, 1.0 - (dy_t / R_h)**2)) if R_h else 0
-        dx_b = R_w * math.sqrt(max(0.0, 1.0 - (dy_b / R_h)**2)) if R_h else 0
-        
+        dx_t = R_w * math.sqrt(max(0.0, 1.0 - (dy_t / R_h) ** 2)) if R_h else 0
+        dx_b = R_w * math.sqrt(max(0.0, 1.0 - (dy_b / R_h) ** 2)) if R_h else 0
+
         th_t = math.asin(dy_t / R_h) if R_h else 0
         th_b = math.asin(dy_b / R_h) if R_h else 0
-        
+
         pts = [(ircx - dx_b, y_bot), (ircx + dx_b, y_bot)]
         for i in range(1, _N_ARC):
             th = th_b + (th_t - th_b) * i / _N_ARC
@@ -338,31 +369,46 @@ def draw_frame(
     cut_y3 = int(ircy - _cut_fracs[2] * R_h)
 
     # 1. Sombra
-    s_rect = pygame.Rect(ircx - R_w, ircy - R_h, R_w * 2, R_h * 2).move(ROTATE_SHADOW_OFFSET, ROTATE_SHADOW_OFFSET)
+    s_rect = pygame.Rect(ircx - R_w, ircy - R_h, R_w * 2, R_h * 2).move(
+        ROTATE_SHADOW_OFFSET, ROTATE_SHADOW_OFFSET
+    )
     pygame.draw.ellipse(screen, ROTATE_SHADOW_COLOR, s_rect)
-    
+
     # 2. Base
     sel_rect = pygame.Rect(ircx - R_w, ircy - R_h, R_w * 2, R_h * 2)
     pygame.draw.ellipse(screen, ROTATE_CIRCLE_COLOR, sel_rect)
-    
+
     # 3. Pills (Cortes Internos) - Agora usam a nova função elíptica
-    pygame.draw.polygon(screen, ROTATE_CUT_COLOR,  _arc_band_elipse(cut_y1, cut_y2))
+    pygame.draw.polygon(screen, ROTATE_CUT_COLOR, _arc_band_elipse(cut_y1, cut_y2))
     pygame.draw.polygon(screen, ROTATE_CUT_SHADOW, _arc_band_elipse(cut_y2, cut_y3))
 
     # 4. Divider Highlight
     dy_mid = max(-R_h, min(R_h, ircy - cut_y2))
-    dx_mid = R_w * math.sqrt(max(0.0, 1.0 - (dy_mid / R_h)**2)) if R_h else 0
-    pygame.draw.line(screen, ROTATE_CUT_HIGHLIGHT, (int(ircx - dx_mid + 2), cut_y2), (int(ircx + dx_mid - 2), cut_y2), 1)
+    dx_mid = R_w * math.sqrt(max(0.0, 1.0 - (dy_mid / R_h) ** 2)) if R_h else 0
+    pygame.draw.line(
+        screen,
+        ROTATE_CUT_HIGHLIGHT,
+        (int(ircx - dx_mid + 2), cut_y2),
+        (int(ircx + dx_mid - 2), cut_y2),
+        1,
+    )
 
     # 5. Specular highlight (Acompanha a curvatura da elipse)
     hl_rect = sel_rect.inflate(-8, -8)
     if hl_rect.width > 0:
-        pygame.draw.arc(screen, ROTATE_HIGHLIGHT_COLOR, hl_rect, math.radians(45), math.radians(135), 2)
+        pygame.draw.arc(
+            screen,
+            ROTATE_HIGHLIGHT_COLOR,
+            hl_rect,
+            math.radians(45),
+            math.radians(135),
+            2,
+        )
 
     # ── border arc (Agora também é uma Elipse!) ──────────────────────
     # Usamos o mesmo sel_rect mas com a espessura da borda
     arc_rect = sel_rect.inflate(b_border, b_border)
-    
+
     # Detetar qual o lado do board que a elipse toca
     d_top, d_bot = ircy - board_rect.top, board_rect.bottom - ircy
     d_left, d_right = ircx - board_rect.left, board_rect.right - ircx
@@ -372,11 +418,17 @@ def draw_frame(
     if min_d == d_top and d_top < R_h + b_border:
         pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, 0, math.pi, b_border)
     elif min_d == d_right and d_right < R_w + b_border:
-        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, -math.pi/2, math.pi/2, b_border)
+        pygame.draw.arc(
+            screen, BOARD_BORDER_COLOR, arc_rect, -math.pi / 2, math.pi / 2, b_border
+        )
     elif min_d == d_bot and d_bot < R_h + b_border:
-        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, math.pi, 2 * math.pi, b_border)
+        pygame.draw.arc(
+            screen, BOARD_BORDER_COLOR, arc_rect, math.pi, 2 * math.pi, b_border
+        )
     elif min_d == d_left and d_left < R_w + b_border:
-        pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, math.pi/2, 3*math.pi/2, b_border)
+        pygame.draw.arc(
+            screen, BOARD_BORDER_COLOR, arc_rect, math.pi / 2, 3 * math.pi / 2, b_border
+        )
 
     # ── border arc where the circle exits the board ───────────────────
     # ── border arc (Apenas para o tabuleiro de 20) ───────────────────
@@ -384,7 +436,7 @@ def draw_frame(
     if total_slots != 10:
         _arc_r = R + b_border // 2
         arc_rect = pygame.Rect(ircx - _arc_r, ircy - _arc_r, 2 * _arc_r, 2 * _arc_r)
-        
+
         d_top = ircy - board_rect.top
         d_bot = board_rect.bottom - ircy
         d_left = ircx - board_rect.left
@@ -394,7 +446,9 @@ def draw_frame(
         if min_d == d_top and d_top < _arc_r:
             ratio = max(-1.0, min(1.0, d_top / _arc_r))
             a = math.asin(ratio)
-            pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, a, math.pi - a, b_border)
+            pygame.draw.arc(
+                screen, BOARD_BORDER_COLOR, arc_rect, a, math.pi - a, b_border
+            )
         elif min_d == d_right and d_right < _arc_r:
             ratio = max(-1.0, min(1.0, d_right / _arc_r))
             a = math.acos(ratio)
@@ -402,22 +456,37 @@ def draw_frame(
         elif min_d == d_bot and d_bot < _arc_r:
             ratio = max(-1.0, min(1.0, d_bot / _arc_r))
             a = math.asin(ratio)
-            pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, math.pi + a, 2 * math.pi - a, b_border)
+            pygame.draw.arc(
+                screen,
+                BOARD_BORDER_COLOR,
+                arc_rect,
+                math.pi + a,
+                2 * math.pi - a,
+                b_border,
+            )
         elif min_d == d_left and d_left < _arc_r:
             ratio = max(-1.0, min(1.0, d_left / _arc_r))
             a = math.acos(ratio)
-            pygame.draw.arc(screen, BOARD_BORDER_COLOR, arc_rect, math.pi - a, math.pi + a, b_border)
+            pygame.draw.arc(
+                screen, BOARD_BORDER_COLOR, arc_rect, math.pi - a, math.pi + a, b_border
+            )
 
     # ── board border rim ──────────────────────────────────────────────
-    pygame.draw.rect(screen, BOARD_BORDER_COLOR, board_rect,
-                     width=b_border, border_radius=b_corner_r)
+    pygame.draw.rect(
+        screen, BOARD_BORDER_COLOR, board_rect, width=b_border, border_radius=b_corner_r
+    )
 
     # ── draw balls ────────────────────────────────────────────────────
     font = _get_font(int(_ball_r * 1.1))
 
     for i in range(total_slots):
         sx, sy = _rounded_rect_point(
-            slot_start + i / total_slots, cx, cy, hw, hh, slot_corner_r,
+            slot_start + i / total_slots,
+            cx,
+            cy,
+            hw,
+            hh,
+            slot_corner_r,
         )
         isx, isy = int(sx), int(sy)
 
@@ -427,13 +496,19 @@ def draw_frame(
         highlight_color = (255, 170, 155) if in_window else SLOT_HIGHLIGHT_COLOR
 
         # shadow → ball → specular highlight
-        pygame.draw.circle(screen, shadow_color,
-                           (isx + SLOT_SHADOW_OFFSET, isy + SLOT_SHADOW_OFFSET),
-                           _ball_r)
+        pygame.draw.circle(
+            screen,
+            shadow_color,
+            (isx + SLOT_SHADOW_OFFSET, isy + SLOT_SHADOW_OFFSET),
+            _ball_r,
+        )
         pygame.draw.circle(screen, ball_color, (isx, isy), _ball_r)
-        pygame.draw.circle(screen, highlight_color,
-                           (isx - _ball_r // 3, isy - _ball_r // 3),
-                           _ball_r // 4)
+        pygame.draw.circle(
+            screen,
+            highlight_color,
+            (isx - _ball_r // 3, isy - _ball_r // 3),
+            _ball_r // 4,
+        )
 
         # number label
         if slots is not None:

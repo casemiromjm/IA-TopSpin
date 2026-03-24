@@ -52,7 +52,9 @@ def _extract(node) -> dict:
 
 def _run_bfs(board: Board) -> dict:
     t0 = time.time()
-    node = breadth_first_search(board.state_key(), board.is_goal, board.get_child_states)
+    node = breadth_first_search(
+        board.state_key(), board.is_goal, board.get_child_states
+    )
     result = _extract(node)
     result["time"] = time.time() - t0
     return result
@@ -68,7 +70,9 @@ def _run_dfs(board: Board) -> dict:
 
 def _run_ids(board: Board) -> dict:
     t0 = time.time()
-    node = iterative_deepening_search(board.state_key(), board.is_goal, board.get_child_states)
+    node = iterative_deepening_search(
+        board.state_key(), board.is_goal, board.get_child_states
+    )
     result = _extract(node)
     result["time"] = time.time() - t0
     return result
@@ -106,10 +110,14 @@ def load_board(size: int, board_arg: str) -> Board:
 
 def main():
     parser = argparse.ArgumentParser(description="Top Spin solver")
-    parser.add_argument("--size",  type=int, default=6, choices=[6, 10])
-    parser.add_argument("--board", type=str, default="random",
-                        help="random | <difficulty> | <difficulty>:<number>")
-    parser.add_argument("--algo",  type=str, default="bfs", choices=list(ALGOS.keys()))
+    parser.add_argument("--size", type=int, default=6, choices=[6, 10])
+    parser.add_argument(
+        "--board",
+        type=str,
+        default="random",
+        help="random | <difficulty> | <difficulty>:<number>",
+    )
+    parser.add_argument("--algo", type=str, default="bfs", choices=list(ALGOS.keys()))
 
     args = parser.parse_args()
 
