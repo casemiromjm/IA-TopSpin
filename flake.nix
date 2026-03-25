@@ -33,6 +33,7 @@
           python313Packages.ruff
 
           just
+          typst
         ];
 
         LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
