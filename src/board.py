@@ -79,7 +79,5 @@ class Board:
         """Return successor states for search algorithms."""
         left = state[1:] + (state[0],)
         right = (state[-1],) + state[:-1]
-        lst = list(state)
-        lst[: self.rotate_size] = lst[: self.rotate_size][::-1]
-        rotated = tuple(lst)
+        rotated = state[: self.rotate_size][::-1] + state[self.rotate_size :]
         return [(left, 1), (right, 1), (rotated, 1)]
