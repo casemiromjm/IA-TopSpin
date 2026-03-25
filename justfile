@@ -22,4 +22,5 @@ format:
 [group: 'docs']
 cp1:
     @typst compile docs/slides_cp1.typ
+    @echo "Created Slides for CP1!"
 

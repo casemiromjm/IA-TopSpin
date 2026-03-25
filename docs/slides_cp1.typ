@@ -54,7 +54,21 @@ The game consists of 20 rounded pieces, numbered from 1 to 20, placed in one lon
   - `move_right(state)`: Rotates the ring one position to the right
   - `spin(state)`: Reverses the first 4 elements (spin window)
   - All operators have cost = 1
-- *Heuristics / Evaluation Functions*: TBD // TODO
+- *Heuristics / Evaluation Functions*:
+  - Adjacency, Mininum Misplaced Pieces, Pattern Database
+
+  // heuristics notes here since the slides are full
+
+  /*
+  adjacency / number of breaks
+  - instead of looking for the piece itself, checks the right neighbor to see if it is in the right order; piece i must be followed by piece i+1, but 20 must be followed by 1; move does not fix any break, only spin fixes it (at most 2, the edges); h = num of breaks / 2
+
+  mininum misplaced pieces
+  - generate all possible winning boards, compare the current state with a possible winning state, this gives the num of misplaced tiles; taking the mininum misplaced pieces, h = mmp / 4
+
+  pattern database
+  - pick a subset of tiles and treat all others as indistinguishable "blank" tiles; before running the game run a search for only the subset and store the number of moves needed to solve it from any configuration and dump it into a database (dict/file); during the game just lookup the database; the cost for solving 20 pieces is always more than the cost for solving a smaller num of pieces
+  */
 
 == Current Implementation
 
