@@ -57,18 +57,16 @@ The game consists of 20 rounded pieces, numbered from 1 to 20, placed in one lon
 - *Heuristics / Evaluation Functions*:
   - Adjacency, Mininum Misplaced Pieces, Pattern Database
 
-  // heuristics notes here since the slides are full
+  - Adjacency (Number of Breaks)
+    - Instead of looking for the piece itself, check the neighbouring piece to see if it is in the correct order. Piece _i_ must be followed by piece _i+1_, but piece 20 must be followed by piece 1. Moving a piece does not fix any breaks; only spinning fixes them (at most two, on the edges).
+    // $ h = "Number of Breaks" / 2 $
 
-  /*
-  adjacency / number of breaks
-  - instead of looking for the piece itself, checks the right neighbor to see if it is in the right order; piece i must be followed by piece i+1, but 20 must be followed by 1; move does not fix any break, only spin fixes it (at most 2, the edges); h = num of breaks / 2
+  Mininum Misplaced Pieces
+  - Generate all possible winning boards and compare the current state with a possible winning state. This gives the number of misplaced tiles and computes the minimum number of misplaced pieces.
+  // $ h = "Mininum Misplaced Pieces" / 4 $
 
-  mininum misplaced pieces
-  - generate all possible winning boards, compare the current state with a possible winning state, this gives the num of misplaced tiles; taking the mininum misplaced pieces, h = mmp / 4
-
-  pattern database
-  - pick a subset of tiles and treat all others as indistinguishable "blank" tiles; before running the game run a search for only the subset and store the number of moves needed to solve it from any configuration and dump it into a database (dict/file); during the game just lookup the database; the cost for solving 20 pieces is always more than the cost for solving a smaller num of pieces
-  */
+  Pattern Database
+  - Pick a subset of tiles and treat all the others as indistinguishable 'blank' tiles. Before running the game, run a search for only the subset and store the number of moves needed to solve it from any configuration in a database (i.e. a dictionary/map, a file). During the game, simply look up the database. The cost of solving 20 pieces is always greater than the cost of solving a smaller number of pieces.
 
 == Current Implementation
 
