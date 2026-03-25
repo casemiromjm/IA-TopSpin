@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import deque
-from copy import deepcopy
 from random import shuffle
 
 
@@ -32,14 +31,6 @@ class Board:
 
     # ── actions ───────────────────────────────────────────────────────────
 
-    def rotate(self) -> None:
-        """Reverse the first *rotate_size* slots in place."""
-        window = list(self.slots)[: self.rotate_size]
-        window.reverse()
-        for i, v in enumerate(window):
-            self.slots[i] = v
-        self.moves += 1
-
     def move_right(self) -> None:
         """Shift the whole track one position clockwise."""
         self.slots.rotate(1)
@@ -50,17 +41,19 @@ class Board:
         self.slots.rotate(-1)
         self.moves += 1
 
-    # ── queries ───────────────────────────────────────────────────────────
+    def rotate(self) -> None:
+        """Reverse the first *rotate_size* slots in place."""
+        window = list(self.slots)[: self.rotate_size]
+        window.reverse()
+        for i, v in enumerate(window):
+            self.slots[i] = v
+        self.moves += 1
 
-    def copy(self) -> Board:
-        return deepcopy(self)
+    # ── queries ───────────────────────────────────────────────────────────
 
     def state_key(self) -> tuple[int, ...]:
         """Hashable snapshot for visited-set membership."""
         return tuple(self.slots)
-
-    def __repr__(self) -> str:
-        return f"Board({list(self.slots)}, moves={self.moves})"
 
     # ── functional interface for search algorithms ─────────────────────────
 

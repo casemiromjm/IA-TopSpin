@@ -4,7 +4,9 @@ Usage:
     python3 solve.py --size 6 --board easy --algo bfs
     python3 solve.py --size 6 --board easy:2 --algo dfs
     python3 solve.py --size 10 --board medium:1 --algo ids
-    python3 solve.py --size 6 --board random --algo bfs
+    python3 solve.py --size 14 --board hard --algo ids
+    python3 solve.py --size 20 --board easy --algo bfs
+    python3 solve.py --size 20 --board random --algo dfs
 
 --board format:  random | <difficulty> | <difficulty>:<number>
   e.g.  easy        ->  easy board #1
@@ -92,7 +94,7 @@ def load_board(size: int, board_arg: str) -> Board:
 
 def main():
     parser = argparse.ArgumentParser(description="Top Spin solver")
-    parser.add_argument("--size", type=int, default=6, choices=[6, 10])
+    parser.add_argument("--size", type=int, default=6, choices=[6, 10, 14, 20])
     parser.add_argument(
         "--board",
         type=str,
