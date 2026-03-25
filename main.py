@@ -142,7 +142,11 @@ def main() -> None:
                         solved_banner = False
 
         # ── state transitions ─────────────────────────────────────────
-        if state == "playing" and board is not None and board.is_solved():
+        if (
+            state == "playing"
+            and board is not None
+            and board.is_goal(board.state_key())
+        ):
             solved_banner = True
 
         if state == "solving" and _solve_result.get("done"):

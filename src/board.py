@@ -52,20 +52,6 @@ class Board:
 
     # ── queries ───────────────────────────────────────────────────────────
 
-    def is_solved(self) -> bool:
-        """True when the slots form an ascending cyclic sequence (any rotation)."""
-        n = len(self.slots)
-        lst = list(self.slots)
-        # find the position of value 1
-        try:
-            start = lst.index(1)
-        except ValueError:
-            return False
-        for i in range(n):
-            if lst[(start + i) % n] != i + 1:
-                return False
-        return True
-
     def copy(self) -> Board:
         return deepcopy(self)
 

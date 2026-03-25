@@ -127,10 +127,10 @@ def main():
     print(f"Board  : {args.board}")
     print(f"Slots  : {list(board.slots)}")
     print(f"Algo   : {args.algo.upper()}")
-    print(f"Solved : {board.is_solved()}")
+    print(f"Solved : {board.is_goal(board.state_key())}")
     print()
 
-    if board.is_solved():
+    if board.is_goal(board.state_key()):
         print("Board is already solved.")
         return
 
