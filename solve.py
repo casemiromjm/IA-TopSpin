@@ -7,14 +7,15 @@ Usage:
     python3 solve.py --size 6 --board random --algo bfs
 
 --board format:  random | <difficulty> | <difficulty>:<number>
-  e.g.  easy        →  easy board #1
-        easy:2      →  easy board #2
-        medium      →  medium board #1
-        random      →  random shuffle
+  e.g.  easy        ->  easy board #1
+        easy:2      ->  easy board #2
+        medium      ->  medium board #1
+        random      ->  random shuffle
 """
 
 import argparse
 import time
+from functools import partial
 
 from src.board import Board
 from src.premade import get as get_config, CONFIGS
@@ -22,6 +23,7 @@ from src.algorithms.search import (
     breadth_first_search,
     depth_first_search,
     iterative_deepening_search,
+    print_solution,
 )
 
 
@@ -40,48 +42,28 @@ def _states_to_moves(path: list) -> list[str]:
 
 def _extract(node) -> dict:
     if node is None:
-        return {"solution": None, "steps": 0}
+        return {"solution": None, "steps": 0, "node": None}
     path = []
     cur = node
     while cur:
         path.append(cur.state)
         cur = cur.parent
     path.reverse()
-    return {"solution": _states_to_moves(path), "steps": len(path) - 1}
+    return {"solution": _states_to_moves(path), "steps": len(path) - 1, "node": node}
 
 
-def _run_bfs(board: Board) -> dict:
+def _run(board: Board, search_fn) -> dict:
     t0 = time.time()
-    node = breadth_first_search(
-        board.state_key(), board.is_goal, board.get_child_states
-    )
-    result = _extract(node)
-    result["time"] = time.time() - t0
-    return result
-
-
-def _run_dfs(board: Board) -> dict:
-    t0 = time.time()
-    node = depth_first_search(board.state_key(), board.is_goal, board.get_child_states)
-    result = _extract(node)
-    result["time"] = time.time() - t0
-    return result
-
-
-def _run_ids(board: Board) -> dict:
-    t0 = time.time()
-    node = iterative_deepening_search(
-        board.state_key(), board.is_goal, board.get_child_states
-    )
+    node = search_fn(board.state_key(), board.is_goal, board.get_child_states)
     result = _extract(node)
     result["time"] = time.time() - t0
     return result
 
 
 ALGOS = {
-    "bfs": _run_bfs,
-    "dfs": _run_dfs,
-    "ids": _run_ids,
+    "bfs": partial(_run, search_fn=breadth_first_search),
+    "dfs": partial(_run, search_fn=depth_first_search),
+    "ids": partial(_run, search_fn=iterative_deepening_search),
 }
 
 
@@ -103,7 +85,7 @@ def load_board(size: int, board_arg: str) -> Board:
             raise SystemExit(f"No '{diff}' boards for size {size}.")
         raise SystemExit(
             f"Board #{num} not found for size {size} / {diff}. "
-            f"Available: 1–{available}."
+            f"Available: 1-{available}."
         )
     return Board(config=list(slots))
 
@@ -140,7 +122,7 @@ def main():
     if sol is None:
         print("No solution found.")
     else:
-        print(f"Solution ({result['steps']} moves): {' -> '.join(sol)}")
+        print_solution(result["node"])
 
     print(f"Time : {result['time']:.4f}s")
 
