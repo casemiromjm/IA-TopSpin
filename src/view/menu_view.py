@@ -6,10 +6,13 @@ import pygame
 import pygame.freetype
 
 from src.premade import count
+from src.algorithms.informed import HEURISTIC_NAMES
 
 SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
-ALGOS = ["Human", "BFS", "DFS", "IDS", "Greedy"]
+UNINFORMED_ALGOS = ["BFS", "DFS", "IDS"]
+INFORMED_ALGOS = ["Greedy"]
+HEURISTICS = ["Adjacency"]
 
 BG_COLOR = "antiquewhite1"
 TITLE_COLOR = (45, 95, 180)
@@ -49,7 +52,12 @@ class MenuState:
         self.size: int = 1  # index into SIZES (default: 20)
         self.difficulty: int = 0  # index into DIFFICULTIES
         self.board_num: int = 0  # 0-based within difficulty
-        self.algo: int = 0  # index into ALGOS
+
+        # Search configuration
+        self.search_type: int = 0  # 0=Human, 1=Uninformed, 2=Informed
+        self.uninformed_algo: int = 0  # index into UNINFORMED_ALGOS
+        self.informed_algo: int = 0  # index into INFORMED_ALGOS
+        self.heuristic: int = 0  # index into HEURISTICS (default: Adjacency)
 
     @property
     def selected_size(self) -> int:
@@ -61,7 +69,17 @@ class MenuState:
 
     @property
     def selected_algo(self) -> str:
-        return ALGOS[self.algo]
+        if self.search_type == 0:
+            return "Human"
+        elif self.search_type == 1:
+            return UNINFORMED_ALGOS[self.uninformed_algo]
+        else:
+            return INFORMED_ALGOS[self.informed_algo]
+
+    @property
+    def selected_heuristic(self) -> str:
+        """Returns lowercase name for use with get_heuristic()."""
+        return HEURISTIC_NAMES[self.heuristic]
 
     @property
     def num_boards(self) -> int:
