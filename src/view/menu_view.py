@@ -134,26 +134,59 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
         screen, cx, base_y + ROW_GAP, DIFFICULTIES, state.difficulty, mouse
     )
 
-    # algorithm row
-    _a, _ = lbl_font.render("Solver", LABEL_COLOR)
-    screen.blit(_a, _a.get_rect(centerx=cx, top=base_y + ROW_GAP * 2 - 28))
-    algo_rects = _button_row(screen, cx, base_y + ROW_GAP * 2, ALGOS, state.algo, mouse)
+    # search type row
+    _st, _ = lbl_font.render("Search Type", LABEL_COLOR)
+    screen.blit(_st, _st.get_rect(centerx=cx, top=base_y + ROW_GAP * 2 - 28))
+    search_type_rects = _button_row(
+        screen,
+        cx,
+        base_y + ROW_GAP * 2,
+        ["Human", "Uninformed", "Informed"],
+        state.search_type,
+        mouse,
+    )
+
+    # algorithm row (changes based on search type)
+    algo_rects = []
+    y_algo = base_y + ROW_GAP * 3
+    if state.search_type == 1:  # Uninformed
+        _a, _ = lbl_font.render("Algorithm", LABEL_COLOR)
+        screen.blit(_a, _a.get_rect(centerx=cx, top=y_algo - 28))
+        algo_rects = _button_row(
+            screen, cx, y_algo, UNINFORMED_ALGOS, state.uninformed_algo, mouse
+        )
+    elif state.search_type == 2:  # Informed
+        _a, _ = lbl_font.render("Algorithm", LABEL_COLOR)
+        screen.blit(_a, _a.get_rect(centerx=cx, top=y_algo - 28))
+        algo_rects = _button_row(
+            screen, cx, y_algo, INFORMED_ALGOS, state.informed_algo, mouse
+        )
+
+    # heuristic row (only for informed search)
+    heuristic_rects = []
+    y_heur = base_y + ROW_GAP * 4
+    if state.search_type == 2:  # Informed
+        _h, _ = lbl_font.render("Heuristic", LABEL_COLOR)
+        screen.blit(_h, _h.get_rect(centerx=cx, top=y_heur - 28))
+        heuristic_rects = _button_row(
+            screen, cx, y_heur, HEURISTICS, state.heuristic, mouse
+        )
 
     # board number sub-row — only when a difficulty (not Random) is selected
     board_rects = []
-    y2 = base_y + ROW_GAP * 3
+    y_board = base_y + ROW_GAP * 5
     if state.difficulty != 0:
         n = state.num_boards
         labels = [f"#{i}" for i in range(1, n + 1)]
         _b, _ = lbl_font.render("Board", LABEL_COLOR)
-        screen.blit(_b, _b.get_rect(centerx=cx, top=y2 - 28))
+        screen.blit(_b, _b.get_rect(centerx=cx, top=y_board - 28))
         board_rects = _button_row(
-            screen, cx, y2, labels, state.board_num, mouse, btn_w=70
+            screen, cx, y_board, labels, state.board_num, mouse, btn_w=70
         )
-        y2 += ROW_GAP
+        y_board += ROW_GAP
 
     # start button
-    start_r = pygame.Rect(cx - START_W // 2, y2 + 10, START_W, START_H)
+    start_r = pygame.Rect(cx - START_W // 2, y_board + 10, START_W, START_H)
     pygame.draw.rect(
         screen,
         START_HOVER if start_r.collidepoint(mouse) else START_COLOR,
@@ -172,7 +205,9 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
     return {
         "size": size_rects,
         "diff": diff_rects,
+        "search_type": search_type_rects,
         "algo": algo_rects,
+        "heuristic": heuristic_rects,
         "board": board_rects,
         "start": start_r,
     }
@@ -192,9 +227,20 @@ def handle_menu_click(pos, rects, state: MenuState) -> bool:
                 state.difficulty = i
                 state.board_num = 0
             return False
+    for i, r in enumerate(rects.get("search_type", [])):
+        if r.collidepoint(pos):
+            state.search_type = i
+            return False
     for i, r in enumerate(rects.get("algo", [])):
         if r.collidepoint(pos):
-            state.algo = i
+            if state.search_type == 1:  # Uninformed
+                state.uninformed_algo = i
+            elif state.search_type == 2:  # Informed
+                state.informed_algo = i
+            return False
+    for i, r in enumerate(rects.get("heuristic", [])):
+        if r.collidepoint(pos):
+            state.heuristic = i
             return False
     for i, r in enumerate(rects.get("board", [])):
         if r.collidepoint(pos):
