@@ -28,7 +28,7 @@ from src.algorithms.search import (
     greedy_search,
     print_solution,
 )
-from src.algorithms.heuristics import adjacency_heuristic
+from src.algorithms.informed import get_heuristic, HEURISTIC_NAMES
 
 
 def _states_to_moves(path: list) -> list[str]:
@@ -64,13 +64,15 @@ def _run(board: Board, search_fn) -> dict:
     return result
 
 
-def _run_greedy(board: Board) -> dict:
+def _run_informed(board: Board, search_fn, heuristic_name: str) -> dict:
+    """Run an informed search algorithm with the specified heuristic."""
     t0 = time.time()
-    node = greedy_search(
+    heuristic_func = get_heuristic(heuristic_name)
+    node = search_fn(
         board.state_key(),
         board.is_goal,
         board.get_child_states,
-        adjacency_heuristic,
+        heuristic_func,
     )
     result = _extract(node)
     result["time"] = time.time() - t0
@@ -81,7 +83,7 @@ ALGOS = {
     "bfs": partial(_run, search_fn=breadth_first_search),
     "dfs": partial(_run, search_fn=depth_first_search),
     "ids": partial(_run, search_fn=iterative_deepening_search),
-    "greedy": _run_greedy,
+    "greedy": partial(_run_informed, search_fn=greedy_search),
 }
 
 
@@ -118,6 +120,13 @@ def main():
         help="random | <difficulty> | <difficulty>:<number>",
     )
     parser.add_argument("--algo", type=str, default="bfs", choices=list(ALGOS.keys()))
+    parser.add_argument(
+        "--heuristic",
+        type=str,
+        default="adjacency",
+        choices=HEURISTIC_NAMES,
+        help="Heuristic for informed search (default: adjacency)",
+    )
 
     args = parser.parse_args()
 
@@ -127,6 +136,8 @@ def main():
     print(f"Board  : {args.board}")
     print(f"Slots  : {list(board.slots)}")
     print(f"Algo   : {args.algo.upper()}")
+    if args.algo in ["greedy"]:
+        print(f"Heur   : {args.heuristic}")
     print(f"Solved : {board.is_goal(board.state_key())}")
     print()
 
@@ -134,7 +145,12 @@ def main():
         print("Board is already solved.")
         return
 
-    result = ALGOS[args.algo](board)
+    # Pass heuristic_name to informed algorithms
+    if args.algo in ["greedy"]:
+        result = ALGOS[args.algo](board, heuristic_name=args.heuristic)
+    else:
+        result = ALGOS[args.algo](board)
+
     sol = result["solution"]
 
     if sol is None:
