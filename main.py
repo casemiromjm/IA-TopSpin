@@ -6,7 +6,9 @@ from src.algorithms.search import (
     breadth_first_search,
     depth_first_search,
     iterative_deepening_search,
+    greedy_search,
 )
+from src.algorithms.heuristics import adjacency_heuristic
 from src.board import Board
 from src.premade import get as get_config
 from src.view.game_view import SCALE_FACTOR, draw_frame
@@ -47,10 +49,16 @@ def _solver_worker(board: Board, algo: str, result: dict) -> None:
         node = breadth_first_search(initial, board.is_goal, board.get_child_states)
     elif algo == "DFS":
         node = depth_first_search(initial, board.is_goal, board.get_child_states)
-    else:  # IDS
+    elif algo == "IDS":
         node = iterative_deepening_search(
             initial, board.is_goal, board.get_child_states
         )
+    elif algo == "Greedy":
+        node = greedy_search(
+            initial, board.is_goal, board.get_child_states, adjacency_heuristic
+        )
+    else:
+        node = None
 
     if node is None:
         result["moves"] = None
