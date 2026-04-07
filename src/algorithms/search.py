@@ -90,3 +90,41 @@ def iterative_deepening_search(
         if result:
             return result
     return None
+
+
+def greedy_search(initial_state, goal_state_func, operators_func, heuristic_func):
+    """Greedy best-first search using only heuristic value.
+
+    Expands nodes with the lowest heuristic value first.
+    Not guaranteed to find the optimal solution.
+
+    Args:
+        initial_state: Starting state
+        goal_state_func: Function to check if state is goal
+        operators_func: Function to get child states
+        heuristic_func: Heuristic function for states
+
+    Returns:
+        TreeNode: Goal node if found, None otherwise
+    """
+    root = TreeNode(initial_state)
+    queue = [(heuristic_func(root.state), root)]
+    visited = {initial_state}
+
+    while queue:
+        _, node = queue.pop(0)
+
+        if goal_state_func(node.state):
+            return node
+
+        for next_state, cost in operators_func(node.state):
+            if next_state not in visited:
+                visited.add(next_state)
+                child = TreeNode(next_state, parent=node)
+                node.add_child(child, cost)
+                queue.append((heuristic_func(child.state), child))
+
+        # Sort queue by heuristic value
+        queue.sort(key=lambda x: x[0])
+
+    return None
