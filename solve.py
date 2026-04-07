@@ -130,6 +130,13 @@ def main():
 
     args = parser.parse_args()
 
+    # Validation: warn if heuristic specified for uninformed algorithm
+    uninformed = ["bfs", "dfs", "ids"]
+    if args.algo in uninformed and args.heuristic != "adjacency":
+        print(
+            f"Warning: --heuristic is ignored for uninformed algorithm '{args.algo}'\n"
+        )
+
     board = load_board(args.size, args.board)
 
     print(f"\nSize   : {args.size}")
