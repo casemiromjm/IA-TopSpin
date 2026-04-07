@@ -9,7 +9,7 @@ from src.premade import count
 
 SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
-ALGOS = ["Human", "BFS", "DFS", "IDS"]
+ALGOS = ["Human", "BFS", "DFS", "IDS", "Greedy"]
 
 BG_COLOR = "antiquewhite1"
 TITLE_COLOR = (45, 95, 180)
