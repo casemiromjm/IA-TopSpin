@@ -8,7 +8,7 @@ from src.algorithms.search import (
     iterative_deepening_search,
     greedy_search,
 )
-from src.algorithms.heuristics import adjacency_heuristic
+from src.algorithms.informed import get_heuristic
 from src.board import Board
 from src.premade import get as get_config
 from src.view.game_view import SCALE_FACTOR, draw_frame
@@ -43,7 +43,7 @@ def _states_to_moves(path: list) -> list[str]:
     return moves
 
 
-def _solver_worker(board: Board, algo: str, result: dict) -> None:
+def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict) -> None:
     initial = board.state_key()
     if algo == "BFS":
         node = breadth_first_search(initial, board.is_goal, board.get_child_states)
@@ -54,8 +54,9 @@ def _solver_worker(board: Board, algo: str, result: dict) -> None:
             initial, board.is_goal, board.get_child_states
         )
     elif algo == "Greedy":
+        heuristic_func = get_heuristic(heuristic_name)
         node = greedy_search(
-            initial, board.is_goal, board.get_child_states, adjacency_heuristic
+            initial, board.is_goal, board.get_child_states, heuristic_func
         )
     else:
         node = None
@@ -132,7 +133,12 @@ def main() -> None:
                                 state = "solving"
                                 threading.Thread(
                                     target=_solver_worker,
-                                    args=(board, menu.selected_algo, _solve_result),
+                                    args=(
+                                        board,
+                                        menu.selected_algo,
+                                        menu.selected_heuristic,
+                                        _solve_result,
+                                    ),
                                     daemon=True,
                                 ).start()
 
