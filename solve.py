@@ -25,8 +25,10 @@ from src.algorithms.search import (
     breadth_first_search,
     depth_first_search,
     iterative_deepening_search,
+    greedy_search,
     print_solution,
 )
+from src.algorithms.heuristics import adjacency_heuristic
 
 
 def _states_to_moves(path: list) -> list[str]:
@@ -62,10 +64,24 @@ def _run(board: Board, search_fn) -> dict:
     return result
 
 
+def _run_greedy(board: Board) -> dict:
+    t0 = time.time()
+    node = greedy_search(
+        board.state_key(),
+        board.is_goal,
+        board.get_child_states,
+        adjacency_heuristic,
+    )
+    result = _extract(node)
+    result["time"] = time.time() - t0
+    return result
+
+
 ALGOS = {
     "bfs": partial(_run, search_fn=breadth_first_search),
     "dfs": partial(_run, search_fn=depth_first_search),
     "ids": partial(_run, search_fn=iterative_deepening_search),
+    "greedy": _run_greedy,
 }
 
 
