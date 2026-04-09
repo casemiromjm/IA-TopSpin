@@ -15,7 +15,7 @@ from src.view.game_view import SCALE_FACTOR, draw_frame
 from src.view.menu_view import MenuState, draw_menu, handle_menu_click
 
 WIDTH: int = 1280 * SCALE_FACTOR
-HEIGHT: int = 720 * SCALE_FACTOR
+HEIGHT: int = 900 * SCALE_FACTOR
 FPS: float = 60.0
 STEP_DELAY: float = 0.5  # seconds between animated moves
 
