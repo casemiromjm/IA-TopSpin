@@ -127,7 +127,7 @@ def main():
     parser.add_argument(
         "--heuristic",
         type=str,
-        default="adjacency",
+        default="",
         choices=HEURISTIC_NAMES,
         help="Heuristic for informed search (default: adjacency)",
     )
@@ -136,7 +136,7 @@ def main():
 
     # Validation: warn if heuristic specified for uninformed algorithm
     uninformed = ["bfs", "dfs", "ids"]
-    if args.algo in uninformed:
+    if args.algo in uninformed and args.heuristic != "":
         print(
             f"Warning: --heuristic is ignored for uninformed algorithm '{args.algo}'\n"
         )
