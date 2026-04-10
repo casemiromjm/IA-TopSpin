@@ -28,7 +28,7 @@ def adjacency_heuristic(state: tuple[int, ...]) -> int:
         if state[next_pos] != expected_next:
             breaks += 1
 
-    return breaks
+    return math.ceil(breaks / 2)
 
 
 def min_misplaced_slots(state: tuple[int, ...]) -> int:
