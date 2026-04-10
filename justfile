@@ -49,6 +49,6 @@ dependencies:
 # Build slides
 [group: 'docs']
 docs deliver:
-    @typst compile docs/slides_{{deliver}}.typ
+    @typst compile docs/slides_{{ lowercase(deliver) }}.typ
     @echo "Created Slides for {{ uppercase(deliver) }}!"
 
