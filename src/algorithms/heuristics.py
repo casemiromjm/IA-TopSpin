@@ -46,7 +46,7 @@ def minimum_misplaced_pieces(state: tuple[int, ...]) -> int:
             expected_piece = ((i + shift) % n) + 1
 
             if state[i] != expected_piece:
-                current_misplaced =+ 1
+                current_misplaced = +1
 
         if current_misplaced < min_misplaced:
             min_misplaced = current_misplaced
