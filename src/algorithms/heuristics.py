@@ -27,3 +27,10 @@ def adjacency_heuristic(state: tuple[int, ...]) -> int:
             breaks += 1
 
     return breaks
+
+def minimum_misplaced_pieces(state: tuple[int, ...]) -> int:
+    """
+    
+    """
+    
+    return 0

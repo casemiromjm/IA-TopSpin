@@ -4,13 +4,18 @@ _default:
 
 # Run GUI version of our project with UV
 [group: 'build']
-run:
+gui:
     @uv run main.py
 
 # Run CLI version of our project
 [group: 'build']
 cli size difficulty algorithm:
     @uv run solve.py --size {{size}} --board {{difficulty}} --algo {{algorithm}}
+
+# List all premade boards
+[group: 'dev']
+boards:
+    @uv run src/premade.py
 
 # Check for linting errors
 [group: 'dev']

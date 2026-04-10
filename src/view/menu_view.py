@@ -11,7 +11,7 @@ from src.algorithms.informed import HEURISTIC_NAMES
 SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
 UNINFORMED_ALGOS = ["BFS", "DFS", "IDS"]
-INFORMED_ALGOS = ["Greedy"]
+INFORMED_ALGOS = ["Greedy", "AStar"]
 HEURISTICS = ["Adjacency"]
 
 BG_COLOR = "antiquewhite1"
