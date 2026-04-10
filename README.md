@@ -12,9 +12,9 @@
 
 ### Just
 
-The installation instructions can be found [here](https://github.com/casey/just?tab=readme-ov-file).
+This is a tool similar to Makefile, but way more modern. The installation instructions can be found [here](https://github.com/casey/just?tab=readme-ov-file).
 
-This is a tool similar to Makefile, but way more modern. For checking the available commands run:
+For checking the available commands run:
 ```sh
 just
 ```
@@ -42,6 +42,8 @@ uv run main.py
 uv run solve.py
 ```
 
+_**DISCLAIMER:** You can use the flag `--help` for better understanding the CLI_
+
 ## What should I do if none is available?
 
 If you do not have access to said tools, you can use old _pip_ and manually manage the python virtual environment. Beware our project is meant to be runned on python 3.12+.
@@ -65,3 +67,5 @@ python3 main.py
 # runs CLI version
 python3 solve.py
 ```
+
+_**DISCLAIMER:** You can use the flag `--help` for better understanding the CLI_
