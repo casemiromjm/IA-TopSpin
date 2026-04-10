@@ -7,10 +7,19 @@ _default:
 gui:
     @uv run main.py
 
+
 # Run CLI version of our project
 [group: 'build']
-cli size difficulty algorithm:
-    @uv run solve.py --size {{size}} --board {{difficulty}} --algo {{algorithm}}
+cli size difficulty algorithm heuristic="":
+    @HEURISTIC_FLAG=""; \
+    if [ "{{algorithm}}" = "astar" ] || [ "{{algorithm}}" = "greedy" ]; then \
+        if [ -z "{{heuristic}}" ]; then \
+            echo "Error: Algorithm {{algorithm}} requires a heuristic."; \
+            exit 1; \
+        fi; \
+        HEURISTIC_FLAG="--heuristic {{heuristic}}"; \
+    fi; \
+    uv run solve.py --size {{size}} --board {{difficulty}} --algo {{algorithm}} $HEURISTIC_FLAG
 
 # List all premade boards
 [group: 'dev']

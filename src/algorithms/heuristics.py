@@ -1,5 +1,6 @@
 """Heuristic functions for informed search algorithms."""
 
+import math
 
 def adjacency_heuristic(state: tuple[int, ...]) -> int:
     """Count the number of adjacency breaks in the state.
@@ -30,7 +31,22 @@ def adjacency_heuristic(state: tuple[int, ...]) -> int:
 
 def minimum_misplaced_pieces(state: tuple[int, ...]) -> int:
     """
-    
+    Calculates the cyclic misplaced pieces heuristic by checking all possible rotations of the goal state.
     """
-    
-    return 0
+
+    n = len(state)
+    min_misplaced = n
+
+    for shift in range(n):
+        current_misplaced = 0
+
+        for i in range(n):
+            expected_piece = ((i + shift) % n) + 1
+
+            if state[i] != expected_piece:
+                current_misplaced =+ 1
+            
+        if current_misplaced < min_misplaced:
+            min_misplaced = current_misplaced
+
+    return math.ceil(min_misplaced / 4)

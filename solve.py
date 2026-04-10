@@ -34,7 +34,6 @@ from src.algorithms.informed import get_heuristic, HEURISTIC_NAMES
 INFORMED_ALGOS = ["greedy", "astar"]
 
 
-
 def _states_to_moves(path: list) -> list[str]:
     moves = []
     for i in range(len(path) - 1):
@@ -137,7 +136,7 @@ def main():
 
     # Validation: warn if heuristic specified for uninformed algorithm
     uninformed = ["bfs", "dfs", "ids"]
-    if args.algo in uninformed and args.heuristic != "adjacency":
+    if args.algo in uninformed:
         print(
             f"Warning: --heuristic is ignored for uninformed algorithm '{args.algo}'\n"
         )
