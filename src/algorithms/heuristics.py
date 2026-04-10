@@ -2,6 +2,7 @@
 
 import math
 
+
 def adjacency_heuristic(state: tuple[int, ...]) -> int:
     """Count the number of adjacency breaks in the state.
 
@@ -29,6 +30,7 @@ def adjacency_heuristic(state: tuple[int, ...]) -> int:
 
     return breaks
 
+
 def minimum_misplaced_pieces(state: tuple[int, ...]) -> int:
     """
     Calculates the cyclic misplaced pieces heuristic by checking all possible rotations of the goal state.
@@ -45,7 +47,7 @@ def minimum_misplaced_pieces(state: tuple[int, ...]) -> int:
 
             if state[i] != expected_piece:
                 current_misplaced =+ 1
-            
+
         if current_misplaced < min_misplaced:
             min_misplaced = current_misplaced
 

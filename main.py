@@ -52,10 +52,14 @@ def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict) -
         case "DFS":
             node = depth_first_search(initial, board.is_goal, board.get_child_states)
         case "IDS":
-            node = iterative_deepening_search(initial, board.is_goal, board.get_child_states)
+            node = iterative_deepening_search(
+                initial, board.is_goal, board.get_child_states
+            )
         case "Greedy":
             heuristic_func = get_heuristic(heuristic_name)
-            node = greedy_search(initial, board.is_goal, board.get_child_states, heuristic_func)
+            node = greedy_search(
+                initial, board.is_goal, board.get_child_states, heuristic_func
+            )
         case "AStar":
             heuristic_func = get_heuristic(heuristic_name)
             node = astar(initial, board.is_goal, board.get_child_states, heuristic_func)

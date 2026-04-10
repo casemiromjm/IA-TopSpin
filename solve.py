@@ -87,7 +87,7 @@ ALGOS = {
     "dfs": partial(_run, search_fn=depth_first_search),
     "ids": partial(_run, search_fn=iterative_deepening_search),
     "greedy": partial(_run_informed, search_fn=greedy_search),
-    "astar" : partial(_run_informed, search_fn=astar)
+    "astar": partial(_run_informed, search_fn=astar),
 }
 
 

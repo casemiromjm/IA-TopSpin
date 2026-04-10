@@ -1,5 +1,5 @@
 from collections import deque
-import heapq        # min-heap
+import heapq  # min-heap
 
 from .node import TreeNode
 
@@ -130,6 +130,7 @@ def greedy_search(initial_state, goal_state_func, operators_func, heuristic_func
 
     return None
 
+
 def astar(initial_state, goal_state_func, operators_func, heuristic_func):
     """
     A* Algorithm
@@ -139,7 +140,7 @@ def astar(initial_state, goal_state_func, operators_func, heuristic_func):
         goal_state_func: Function to check if state is goal
         operators_func: Function to get child states
         heuristic_func: Heuristic function for states
-    
+
     Returns:
         TreeNode: Goal node if found, None otherwise
     """
@@ -148,7 +149,7 @@ def astar(initial_state, goal_state_func, operators_func, heuristic_func):
     queue = []
     # initial g is 0
     heapq.heappush(queue, (heuristic_func(root.state), root))
-    visited  = set()
+    visited = set()
 
     while queue:
         node: TreeNode
