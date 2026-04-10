@@ -2,19 +2,28 @@
 _default:
     @just -l
 
-# Run project with UV
+# Run GUI version of our project with UV
+[group: 'build']
 run:
     @uv run main.py
 
+# Run CLI version of our project
+[group: 'build']
+cli size difficulty algorithm:
+    @uv run solve.py --size {{size}} --board {{difficulty}} --algo {{algorithm}}
+
 # Check for linting errors
+[group: 'dev']
 lint:
     @uv run ruff check .
 
 # Automatically fix linting and sort imports
+[group: 'dev']
 fix:
     @uv run ruff check . --fix
 
 # Format the code
+[group: 'dev']
 format:
     @uv run ruff format .
 
