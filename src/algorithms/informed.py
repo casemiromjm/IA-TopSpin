@@ -1,13 +1,13 @@
 """Registry and utilities for informed search algorithms."""
 
-from .heuristics import adjacency_heuristic, minimum_misplaced_pieces
+from .heuristics import adjacency_heuristic, min_misplaced_slots
 
 HEURISTICS = {
     "adjacency": adjacency_heuristic,
-    "min_misplaced_tiles": minimum_misplaced_pieces,
+    "min_misplaced_slots": min_misplaced_slots,
 }
 
-HEURISTIC_NAMES = ["adjacency", "min_misplaced_tiles"]
+HEURISTIC_NAMES = ["adjacency", "min_misplaced_slots"]
 
 
 def get_heuristic(name: str):

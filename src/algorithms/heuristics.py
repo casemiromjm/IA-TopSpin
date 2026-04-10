@@ -31,24 +31,22 @@ def adjacency_heuristic(state: tuple[int, ...]) -> int:
     return breaks
 
 
-def minimum_misplaced_pieces(state: tuple[int, ...]) -> int:
+def min_misplaced_slots(state: tuple[int, ...]) -> int:
     """
-    Calculates the cyclic misplaced pieces heuristic by checking all possible rotations of the goal state.
+    Calculates the cyclic misplaced slots heuristic by checking all possible rotations of the goal state. Using frequency_map for better performance
     """
 
     n = len(state)
-    min_misplaced = n
 
-    for shift in range(n):
-        current_misplaced = 0
+    shift_counts = [0] * n
 
-        for i in range(n):
-            expected_piece = ((i + shift) % n) + 1
+    for i, piece in enumerate(state):
+        shift = (i - (piece - 1)) % n
+        shift_counts[shift] += 1
 
-            if state[i] != expected_piece:
-                current_misplaced = +1
+    # if 20 pieces need a shift 1, it is a winning board shifted by 1
+    max_in_place = max(shift_counts)
 
-        if current_misplaced < min_misplaced:
-            min_misplaced = current_misplaced
+    min_misplaced = n - max_in_place
 
     return math.ceil(min_misplaced / 4)
