@@ -37,6 +37,9 @@ import csv
 from pathlib import Path
 
 def write_results_to_csv(args, result):
+    """
+    Append result of a run to performance.csv
+    """
 
     project_root = Path(__file__).resolve().parent
     output_dir = project_root / "analysis" / "data"
@@ -46,8 +49,7 @@ def write_results_to_csv(args, result):
 
     write_header = not file_path.exists()
 
-    # can switch to mode="a" for only appending and never overwriting
-    with open(file_path, mode="w", newline="") as f:
+    with open(file_path, mode="a", newline="") as f:
         writer = csv.writer(f)
 
         if write_header:
