@@ -79,11 +79,11 @@ just docs cp1     # checkpoint 1 slides  → docs/slides_cp1.pdf
 
 If you do not have access to said tools, you can use old _pip_ and manually manage the python virtual environment. Beware our project is meant to be runned on python 3.12+.
 
-First, generate `requirements.txt` (only needed once, requires uv):
+<!-- First, generate `requirements.txt` (only needed once, requires uv):
 ```sh
 just dependencies
 # or: uv export --no-hashes --no-dev --format requirements-txt > requirements.txt
-```
+``` -->
 
 Creating and activating the venv:
 ```sh
