@@ -30,6 +30,44 @@ from src.algorithms.search import (
 )
 from src.algorithms.informed import get_heuristic, HEURISTIC_NAMES
 
+import csv
+from pathlib import Path
+
+def append_results_to_csv(args, result):
+
+    project_root = Path(__file__).resolve().parent
+    output_dir = project_root / "analysis" / "data"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    file_path = output_dir / "performance.csv"
+
+    write_header = not file_path.exists()
+
+    with open(file_path, "a", newline="") as f:
+        writer = csv.writer(f)
+
+        if write_header:
+            writer.writerow(["size","difficulty","board_name","algo","heuristic","time(s)","steps","timeout"])
+
+        has_board_cnt = args.board.find(":")
+
+        board_name = f"{args.size}:{args.board}" if has_board_cnt != -1 else f"{args.size}:{args.board}:1"
+
+        if result.get("timeout"):
+            time_output = "N/A"
+        else:
+            time_output = round(result.get("time", 0), 6)
+
+        writer.writerow([
+            args.size,
+            args.board,
+            board_name,
+            args.algo.upper(),
+            args.heuristic if args.algo in ["greedy", "astar"] else "N/A",
+            time_output,
+            result.get("steps", 0),
+            result.get("timeout", False)
+        ])
 
 def _states_to_moves(path: list) -> list[str]:
     moves = []
@@ -160,12 +198,19 @@ def main():
 
     sol = result["solution"]
 
-    if sol is None:
+    if result.get("timeout"):
+        print(f"\n[!] Search aborted: Timed out after {args.timeout} seconds!")
+        time_display = "N/A"
+    elif sol is None:
         print("No solution found.")
+        time_display = f"{result['time']:.4f}s"
     else:
         print_solution(result["node"])
+        time_display = f"{result['time']:.4f}s"
 
-    print(f"Time : {result['time']:.4f}s")
+    print(f"Time : {time_display}")
+
+    append_results_to_csv(args, result)
 
 
 if __name__ == "__main__":

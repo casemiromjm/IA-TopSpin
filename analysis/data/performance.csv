@@ -1,0 +1,5 @@
+size,difficulty,board_name,algo,heuristic,time(s),steps,timeout
+10,easy:2,10:easy:2,DFS,N/A,0.0006,204,False
+10,easy,10:easy:1,DFS,N/A,0.0,1,False
+10,easy,10:easy:1,DFS,N/A,1.192e-05,1,False
+10,easy,10:easy:1,DFS,N/A,1.6e-05,1,False
