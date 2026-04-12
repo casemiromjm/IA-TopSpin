@@ -134,14 +134,34 @@ def greedy_search(initial_state, goal_state_func, operators_func, heuristic_func
 def weighted_astar_search(
     initial_state, goal_state_func, operators_func, heuristic_func, weight=2
 ):
+    """Weighted A* search — trades optimality for speed by inflating the heuristic.
+
+    Uses f = g + w * h instead of f = g + h. A higher weight makes the search
+    more greedy (faster but possibly suboptimal). At w=1 this is plain A*.
+    The solution cost is guaranteed to be within a factor of w of the optimal.
+
+    Args:
+        initial_state: Starting state
+        goal_state_func: Function to check if state is goal
+        operators_func: Function to get child states
+        heuristic_func: Admissible heuristic function for states
+        weight: Inflation factor >= 1 (default 2)
+
+    Returns:
+        TreeNode: Goal node if found, None otherwise
+    """
     root = TreeNode(initial_state)
+    # counter breaks ties when two nodes share the same f-score,
+    # preventing heapq from trying to compare TreeNode objects directly
     counter = 0
+    # initial f = g(0) + w * h
     heap = [(weight * heuristic_func(initial_state), counter, root)]
     visited = set()
 
     while heap:
         _, _, node = heapq.heappop(heap)
 
+        # skip if already expanded via a cheaper path
         if node.state in visited:
             continue
         visited.add(node.state)
@@ -153,7 +173,9 @@ def weighted_astar_search(
             if next_state not in visited:
                 counter += 1
                 child = TreeNode(next_state, parent=node)
+                # g = accumulated path cost up to this child
                 node.add_child(child, operator_cost=cost)
+                # f = g + w * h — inflate heuristic to bias towards goal
                 f = child.cost + weight * heuristic_func(next_state)
                 heapq.heappush(heap, (f, counter, child))
 

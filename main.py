@@ -63,7 +63,7 @@ def _solver_worker(
             node = greedy_search(
                 initial, board.is_goal, board.get_child_states, heuristic_func
             )
-        case "AStar":
+        case "A*":
             heuristic_func = get_heuristic(heuristic_name)
             node = astar(initial, board.is_goal, board.get_child_states, heuristic_func)
         case "Weighted A*":
