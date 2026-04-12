@@ -7,6 +7,7 @@ from src.algorithms.search import (
     depth_first_search,
     iterative_deepening_search,
     greedy_search,
+    astar,
 )
 from src.algorithms.informed import get_heuristic
 from src.board import Board
@@ -15,7 +16,7 @@ from src.view.game_view import SCALE_FACTOR, draw_frame
 from src.view.menu_view import MenuState, draw_menu, handle_menu_click
 
 WIDTH: int = 1280 * SCALE_FACTOR
-HEIGHT: int = 720 * SCALE_FACTOR
+HEIGHT: int = 920 * SCALE_FACTOR
 FPS: float = 60.0
 STEP_DELAY: float = 0.5  # seconds between animated moves
 
@@ -45,21 +46,25 @@ def _states_to_moves(path: list) -> list[str]:
 
 def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict) -> None:
     initial = board.state_key()
-    if algo == "BFS":
-        node = breadth_first_search(initial, board.is_goal, board.get_child_states)
-    elif algo == "DFS":
-        node = depth_first_search(initial, board.is_goal, board.get_child_states)
-    elif algo == "IDS":
-        node = iterative_deepening_search(
-            initial, board.is_goal, board.get_child_states
-        )
-    elif algo == "Greedy":
-        heuristic_func = get_heuristic(heuristic_name)
-        node = greedy_search(
-            initial, board.is_goal, board.get_child_states, heuristic_func
-        )
-    else:
-        node = None
+    match algo:
+        case "BFS":
+            node = breadth_first_search(initial, board.is_goal, board.get_child_states)
+        case "DFS":
+            node = depth_first_search(initial, board.is_goal, board.get_child_states)
+        case "IDS":
+            node = iterative_deepening_search(
+                initial, board.is_goal, board.get_child_states
+            )
+        case "Greedy":
+            heuristic_func = get_heuristic(heuristic_name)
+            node = greedy_search(
+                initial, board.is_goal, board.get_child_states, heuristic_func
+            )
+        case "AStar":
+            heuristic_func = get_heuristic(heuristic_name)
+            node = astar(initial, board.is_goal, board.get_child_states, heuristic_func)
+        case _:
+            node = None
 
     if node is None:
         result["moves"] = None

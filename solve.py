@@ -26,9 +26,12 @@ from src.algorithms.search import (
     depth_first_search,
     iterative_deepening_search,
     greedy_search,
+    astar,
     print_solution,
 )
 from src.algorithms.informed import get_heuristic, HEURISTIC_NAMES
+
+INFORMED_ALGOS = ["greedy", "astar"]
 
 import signal
 from timeout_utils import TimeoutException, _timeout_handler
@@ -155,6 +158,7 @@ ALGOS = {
     "dfs": partial(_run, search_fn=depth_first_search),
     "ids": partial(_run, search_fn=iterative_deepening_search),
     "greedy": partial(_run_informed, search_fn=greedy_search),
+    "astar": partial(_run_informed, search_fn=astar),
 }
 
 
@@ -194,7 +198,7 @@ def main():
     parser.add_argument(
         "--heuristic",
         type=str,
-        default="adjacency",
+        default="",
         choices=HEURISTIC_NAMES,
         help="Heuristic for informed search (default: adjacency)",
     )
@@ -210,7 +214,7 @@ def main():
 
     # Validation: warn if heuristic specified for uninformed algorithm
     uninformed = ["bfs", "dfs", "ids"]
-    if args.algo in uninformed and args.heuristic != "adjacency":
+    if args.algo in uninformed and args.heuristic != "":
         print(
             f"Warning: --heuristic is ignored for uninformed algorithm '{args.algo}'\n"
         )
@@ -221,7 +225,7 @@ def main():
     print(f"Board  : {args.board}")
     print(f"Slots  : {list(board.slots)}")
     print(f"Algo   : {args.algo.upper()}")
-    if args.algo in ["greedy"]:
+    if args.algo in INFORMED_ALGOS:
         print(f"Heur   : {args.heuristic}")
     print(f"Solved : {board.is_goal(board.state_key())}")
     print()
@@ -231,7 +235,7 @@ def main():
         return
 
     # Pass heuristic_name to informed algorithms
-    if args.algo in ["greedy"]:
+    if args.algo in INFORMED_ALGOS:
         result = ALGOS[args.algo](board, heuristic_name=args.heuristic, timeout=args.timeout)
     else:
         result = ALGOS[args.algo](board, timeout=args.timeout)

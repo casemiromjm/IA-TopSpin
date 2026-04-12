@@ -1,5 +1,7 @@
 """Heuristic functions for informed search algorithms."""
 
+import math
+
 
 def adjacency_heuristic(state: tuple[int, ...]) -> int:
     """Count the number of adjacency breaks in the state.
@@ -26,4 +28,25 @@ def adjacency_heuristic(state: tuple[int, ...]) -> int:
         if state[next_pos] != expected_next:
             breaks += 1
 
-    return breaks
+    return math.ceil(breaks / 2)
+
+
+def min_misplaced_slots(state: tuple[int, ...]) -> int:
+    """
+    Calculates the cyclic misplaced slots heuristic by checking all possible rotations of the goal state. Using frequency_map for better performance
+    """
+
+    n = len(state)
+
+    shift_counts = [0] * n
+
+    for i, piece in enumerate(state):
+        shift = (i - (piece - 1)) % n
+        shift_counts[shift] += 1
+
+    # if 20 pieces need a shift 1, it is a winning board shifted by 1
+    max_in_place = max(shift_counts)
+
+    min_misplaced = n - max_in_place
+
+    return math.ceil(min_misplaced / 4)

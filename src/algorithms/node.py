@@ -9,3 +9,9 @@ class TreeNode:
         self.children.append(child_node)
         child_node.cost = self.cost + operator_cost
         child_node.parent = self
+
+    def __eq__(self, other: "TreeNode"):
+        return self.state == other.state
+
+    def __lt__(self, other: "TreeNode"):
+        return self.state < other.state
