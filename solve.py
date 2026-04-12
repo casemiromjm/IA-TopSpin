@@ -39,6 +39,7 @@ from pathlib import Path
 
 INFORMED_ALGOS = ["greedy", "astar"]
 
+
 def write_results_to_csv(args, result):
     """
     Append result of a run to performance.csv
