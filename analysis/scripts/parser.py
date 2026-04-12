@@ -13,13 +13,13 @@ def getBoardsData():
     out_file = os.path.join(os.path.dirname(__file__), "../data/available_boards.csv")
 
     with open(out_file, "w") as f:
-        f.write("size,diff,board_name\n")
+        f.write("size,diff,board_cnt\n")
 
         for size, entry in CONFIGS.items():
             for diff, boards in entry.items():
                 cnt = 1
                 for _ in boards:
-                    f.write(f"{size},{diff},{diff}:{size}:{cnt}\n")
+                    f.write(f"{size},{diff},{cnt}\n")
                     cnt += 1
         
 if __name__ == "__main__":
