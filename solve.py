@@ -38,11 +38,7 @@ from timeout_utils import TimeoutException, _timeout_handler
 import csv
 from pathlib import Path
 
-import signal
-from timeout_utils import TimeoutException, _timeout_handler
 
-import csv
-from pathlib import Path
 
 INFORMED_ALGOS = ["greedy", "astar", "weighted-astar"]
 
