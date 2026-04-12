@@ -10,8 +10,8 @@ HEURISTICS=("adjacency" "min_misplaced_slots")
 echo "Generating available boards CSV..."
 uv run analysis/scripts/parser.py
 
-IN_CSV_FILE="statistics/data/boards/available_boards.csv"
-if [[ ! -f "$IN_CSV_FILE"]]; then
+IN_CSV_FILE="analysis/data/available_boards.csv"
+if [[ ! -f "$IN_CSV_FILE" ]]; then
     echo "Error: $IN_CSV_FILE not found! Did the parser fail?"
     exit 1
 fi
