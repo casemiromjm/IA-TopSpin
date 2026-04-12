@@ -41,14 +41,6 @@ Our project is based in the Top Spin game. This game is similar to Rubik's Cube,
 
 The game consists of 20 rounded pieces, numbered from 1 to 20, placed in one long looped track. It also has a turntable in the loop, which allows the player to rotate any 4 adjacent pieces so that they will be in reverse order.
 
-== Related Work
-
-- Bortoluzzi, P. P. (2012) #link("https://ai.dmi.unibas.ch/papers/theses/bortoluzzi-bachelor-12.pdf")[#text([A Pattern Database Approach
-    for Solving the TopSpin Puzzle Problem])]. University of Basel.
-- Mortensen, E. (2017) #link("https://www.geekyhobbies.com/top-spin-puzzle-review-solution")[#text([Top Spin Puzzle Review and Solution])]. Geeky Hobbies
-- Scherphuis, J. #link("https://www.jaapsch.net/puzzles/topspin.html")[#text([Topspin / No. Crunch])]. Jaap's Puzzel Page.
-- Jamie Mulholand (2019) #link("https://www.sfu.ca/~jtmulhol/math302/puzzles-ot.html")[#text([Oval Track puzzle])]. Simon Fraser University
-
 == Problem Formulation
 
 - *State*: Represented using a `TreeNode` class containing:
@@ -118,13 +110,13 @@ All solvers run in a *background thread* so the UI never freezes. \
 *Hint system:* Greedy runs in the background while the human plays to suggest the next best move.
 
 == Experimental Results — Uninformed Search
-
+#lorem(80)
 
 == Experimental Results — Informed Search
-
+#lorem(80)
 
 == Conclusions
-
+#lorem(80)
 
 == References & Materials
 

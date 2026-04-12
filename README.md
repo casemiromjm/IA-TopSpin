@@ -105,4 +105,4 @@ python3 main.py
 python3 solve.py
 ```
 
-_**DISCLAIMER:** You can use the flag `--help` for better understanding the CLI_
+_**DISCLAIMER:** You can use the flag `--help` for better understanding the CLI or check [this](#cli-arguments)_
