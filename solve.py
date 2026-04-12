@@ -55,8 +55,9 @@ def write_results_to_csv(args, result):
         if write_header:
             writer.writerow(["size","difficulty","board_name","algo","heuristic","time(s)","steps","timeout"])
 
-        has_board_cnt = args.board.find(":")
 
+        # not really necessary considering how performance.sh calls solve, but nice to have
+        has_board_cnt = args.board.find(":")
         board_name = f"{args.size}:{args.board}" if has_board_cnt != -1 else f"{args.size}:{args.board}:1"
 
         if result.get("timeout"):

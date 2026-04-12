@@ -30,7 +30,7 @@ while IFS=, read -r size diff board_cnt; do
     for algo in "${UNINFORMED_ALGOS[@]}"; do
         echo "  -> Running $algo..."
         for i in 1 2 3; do
-            uv run solve.py --size "$size" --board "$diff" --algo "$algo"
+            uv run solve.py --size "$size" --board "$diff":"$board_cnt" --algo "$algo"
         done
     done
 
@@ -38,7 +38,7 @@ while IFS=, read -r size diff board_cnt; do
         for heuristic in "${HEURISTICS[@]}"; do
             echo "  -> Running $algo with $heuristic..."
             for i in 1 2 3; do
-                uv run solve.py --size "$size" --board "$diff" --algo "$algo" --heuristic "$heuristic"
+                uv run solve.py --size "$size" --board "$diff":"$board_cnt" --algo "$algo" --heuristic "$heuristic"
             done
         done
     done
