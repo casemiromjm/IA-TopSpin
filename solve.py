@@ -27,6 +27,7 @@ from src.algorithms.search import (
     iterative_deepening_search,
     greedy_search,
     astar,
+    weighted_astar_search,
     print_solution,
 )
 from src.algorithms.informed import get_heuristic, HEURISTIC_NAMES
@@ -37,7 +38,13 @@ from timeout_utils import TimeoutException, _timeout_handler
 import csv
 from pathlib import Path
 
-INFORMED_ALGOS = ["greedy", "astar"]
+import signal
+from timeout_utils import TimeoutException, _timeout_handler
+
+import csv
+from pathlib import Path
+
+INFORMED_ALGOS = ["greedy", "astar", "weighted-astar"]
 
 
 def write_results_to_csv(args, result):
@@ -177,6 +184,7 @@ ALGOS = {
     "ids": partial(_run, search_fn=iterative_deepening_search),
     "greedy": partial(_run_informed, search_fn=greedy_search),
     "astar": partial(_run_informed, search_fn=astar),
+    "weighted-astar": partial(_run_informed, search_fn=weighted_astar_search),
 }
 
 

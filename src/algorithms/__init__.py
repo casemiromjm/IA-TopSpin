@@ -4,6 +4,7 @@ from .search import (
     iterative_deepening_search,
     greedy_search,
     astar,
+    weighted_astar_search,
 )
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "iterative_deepening_search",
     "greedy_search",
     "astar",
+    "weighted_astar_search",
 ]

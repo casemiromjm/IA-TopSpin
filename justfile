@@ -12,7 +12,7 @@ gui:
 [group: 'build']
 cli size difficulty algorithm heuristic="":
     @HEURISTIC_FLAG=""; \
-    if [ "{{algorithm}}" = "astar" ] || [ "{{algorithm}}" = "greedy" ]; then \
+    if [ "{{algorithm}}" = "astar" ] || [ "{{algorithm}}" = "greedy" ] || [ "{{algorithm}}" = "weighted-astar" ]; then \
         if [ -z "{{heuristic}}" ]; then \
             echo "Error: Algorithm {{algorithm}} requires a heuristic."; \
             exit 1; \
