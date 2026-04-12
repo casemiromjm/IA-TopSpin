@@ -3,7 +3,7 @@
 cd "$(dirname "$0")/../../" || exit 1
 
 UNINFORMED_ALGOS=("bfs" "dfs" "ids")
-INFORMED_ALGOS=("greedy" "astar")
+INFORMED_ALGOS=("greedy" "astar" "weighted-astar")
 HEURISTICS=("adjacency" "min_misplaced_slots")
 
 # make sure it has all boards
@@ -37,6 +37,12 @@ while IFS=, read -r size diff board_cnt; do
 
     for algo in "${INFORMED_ALGOS[@]}"; do
         for heuristic in "${HEURISTICS[@]}"; do
+
+            # skipping done performance test
+            if [[ "$algo" = "greedy" && "$heuristic" = "adjacency" ]]; then
+                continue
+            fi
+
             echo "  -> Running $algo with $heuristic..."
             for i in 1 2 3; do
                 uv run solve.py --size "$size" --board "$diff":"$board_cnt" --algo "$algo" --heuristic "$heuristic"
