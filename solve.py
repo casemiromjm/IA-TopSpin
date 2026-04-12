@@ -31,14 +31,13 @@ from src.algorithms.search import (
 )
 from src.algorithms.informed import get_heuristic, HEURISTIC_NAMES
 
-INFORMED_ALGOS = ["greedy", "astar"]
-
 import signal
 from timeout_utils import TimeoutException, _timeout_handler
 
 import csv
 from pathlib import Path
 
+INFORMED_ALGOS = ["greedy", "astar"]
 
 def write_results_to_csv(args, result):
     """
