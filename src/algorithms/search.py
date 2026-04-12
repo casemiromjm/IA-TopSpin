@@ -1,4 +1,5 @@
 from collections import deque
+import heapq  # min-heap
 
 from .node import TreeNode
 
@@ -126,5 +127,50 @@ def greedy_search(initial_state, goal_state_func, operators_func, heuristic_func
 
         # Sort queue by heuristic value
         queue.sort(key=lambda x: x[0])
+
+    return None
+
+
+def astar(initial_state, goal_state_func, operators_func, heuristic_func):
+    """
+    A* Algorithm
+
+    Args:
+        initial_state: Starting state
+        goal_state_func: Function to check if state is goal
+        operators_func: Function to get child states
+        heuristic_func: Heuristic function for states
+
+    Returns:
+        TreeNode: Goal node if found, None otherwise
+    """
+
+    root = TreeNode(initial_state)
+    queue = []
+    # initial g is 0
+    heapq.heappush(queue, (heuristic_func(root.state), root))
+    visited = set()
+
+    while queue:
+        node: TreeNode
+        _, node = heapq.heappop(queue)
+
+        # considering an admissible heuristic this is not need, but it is a safety check and it also can improve perfomance by avoiding redundant checks
+        if node.state in visited:
+            continue
+
+        visited.add(node.state)
+
+        if goal_state_func(node.state):
+            return node
+
+        for next_state, cost in operators_func(node.state):
+            if next_state not in visited:
+                child = TreeNode(next_state, parent=node)
+                # g = current cost (node.cost) + cost of the next move (cost)
+                node.add_child(child, operator_cost=cost)
+                # calculates h, f = g + h
+                f_score = child.cost + heuristic_func(next_state)
+                heapq.heappush(queue, (f_score, child))
 
     return None

@@ -7,6 +7,7 @@ from src.algorithms.search import (
     depth_first_search,
     iterative_deepening_search,
     greedy_search,
+    astar,
 )
 from src.algorithms.informed import get_heuristic
 from src.board import Board
@@ -48,21 +49,25 @@ def _states_to_moves(path: list) -> list[str]:
 
 def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict) -> None:
     initial = board.state_key()
-    if algo == "BFS":
-        node = breadth_first_search(initial, board.is_goal, board.get_child_states)
-    elif algo == "DFS":
-        node = depth_first_search(initial, board.is_goal, board.get_child_states)
-    elif algo == "IDS":
-        node = iterative_deepening_search(
-            initial, board.is_goal, board.get_child_states
-        )
-    elif algo == "Greedy":
-        heuristic_func = get_heuristic(heuristic_name)
-        node = greedy_search(
-            initial, board.is_goal, board.get_child_states, heuristic_func
-        )
-    else:
-        node = None
+    match algo:
+        case "BFS":
+            node = breadth_first_search(initial, board.is_goal, board.get_child_states)
+        case "DFS":
+            node = depth_first_search(initial, board.is_goal, board.get_child_states)
+        case "IDS":
+            node = iterative_deepening_search(
+                initial, board.is_goal, board.get_child_states
+            )
+        case "Greedy":
+            heuristic_func = get_heuristic(heuristic_name)
+            node = greedy_search(
+                initial, board.is_goal, board.get_child_states, heuristic_func
+            )
+        case "AStar":
+            heuristic_func = get_heuristic(heuristic_name)
+            node = astar(initial, board.is_goal, board.get_child_states, heuristic_func)
+        case _:
+            node = None
 
     if node is None:
         result["moves"] = None

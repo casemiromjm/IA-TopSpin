@@ -11,9 +11,9 @@ from src.algorithms.informed import HEURISTIC_NAMES
 SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
 UNINFORMED_ALGOS = ["BFS", "DFS", "IDS"]
-INFORMED_ALGOS = ["Greedy"]
-INFORMED_ALGOS_SOON = ["A*", "Weighted A*", "Pattern DB"]   # displayed but not yet usable
-HEURISTICS = ["Adjacency"]
+INFORMED_ALGOS = ["Greedy", "A*"]
+INFORMED_ALGOS_SOON = ["Weighted A*", "Pattern DB"]   # displayed but not yet usable
+HEURISTICS = ["Adjacency", "Min Misplaced"]
 
 BG_COLOR = "antiquewhite1"
 TITLE_COLOR = (45, 95, 180)
