@@ -39,7 +39,6 @@ import csv
 from pathlib import Path
 
 
-
 INFORMED_ALGOS = ["greedy", "astar", "weighted-astar"]
 
 
