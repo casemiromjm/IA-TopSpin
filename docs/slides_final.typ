@@ -118,7 +118,7 @@ All solvers run in a *background thread* so the UI never freezes. \
   )
 ]
 
-- Many BFS/IDS runs time out at sizes 14–20; the plot shows only successful runs.
+- Many BFS/IDS runs time out at sizes 14-20; the plot shows only successful runs.
 - Runtime varies sharply with size and difficulty; size 20 has few successful uninformed runs.
 - Informed methods dominate at size 10+, except where Greedy slows down.
 
@@ -132,11 +132,15 @@ All solvers run in a *background thread* so the UI never freezes. \
 ]
 
 - Heuristic choice can change runtime by orders of magnitude (especially for Greedy).
-- Weighted A\* is usually faster than A\* for adjacency/min-misplaced at size 10–14.
+- Weighted A\* is usually faster than A\* for adjacency/min-misplaced at size 10-14.
 - Pattern DB helps on some size 10 cases but is slower on size 20.
 
 == Conclusions
-#lorem(80)
+- *State Space Explosion:* Uninformed algorithms perform well on small boards but quickly hit time and memory limits, proving practically unusable for sizes 14 to 20.
+- *The Power of Informed Search:* A\* and Greedy algorithms drastically outperform blind search. However, performance varies by orders of magnitude depending on the heuristic, highlighting that a smart evaluation function is more critical than raw computation.
+- *Optimality vs. Speed Trade-off:* Weighted A\* proved to be a highly effective compromise for larger configurations (sizes 10-14), sacrificing strict optimality to find valid solutions significantly faster than standard A\*.
+- *Pattern Database Scaling:* While Pattern DBs accelerated solutions for mid-sized boards (size 10), they struggled at size 20, suggesting that memory and lookup overhead eventually outweigh the heuristic benefits on massive state spaces.
+- *Architectural Success:* Decoupling the Pygame UI from the search algorithms using background threads successfully kept the interface fluid and enabled real-time features like the Greedy-powered Hint System.
 
 == References & Materials
 
@@ -149,8 +153,8 @@ All solvers run in a *background thread* so the UI never freezes. \
 - Mulholand, J. (2019). _Oval Track Puzzle_. Simon Fraser University. #link("https://www.sfu.ca/~jtmulhol/math302/puzzles-ot.html")
 
 *Software & tools*
-- Python 3.13 + Pygame 2 — #link("https://python.org") / #link("https://pygame.org")
+- Python 3.12 + Pygame 2 — #link("https://python.org") + #link("https://pygame.org")
 - uv (package manager) — #link("https://docs.astral.sh/uv/")
 - just (task runner) — #link("https://github.com/casey/just")
-- Typst + diatypst theme — #link("https://typst.app") / #link("https://github.com/skriptum/diatypst")
+- Typst + diatypst theme — #link("https://typst.app") + #link("https://github.com/skriptum/diatypst")
 - Ruff (linter/formatter) — #link("https://docs.astral.sh/ruff/")
