@@ -154,6 +154,11 @@ def astar(initial_state, goal_state_func, operators_func, heuristic_func):
     while queue:
         node: TreeNode
         _, node = heapq.heappop(queue)
+
+        # considering an admissible heuristic this is not need, but it is a safety check and it also can improve perfomance by avoiding redundant checks
+        if node.state in visited:
+            continue
+
         visited.add(node.state)
 
         if goal_state_func(node.state):
