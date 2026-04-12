@@ -48,7 +48,9 @@ def _states_to_moves(path: list) -> list[str]:
     return moves
 
 
-def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict, weight: int = 2) -> None:
+def _solver_worker(
+    board: Board, algo: str, heuristic_name: str, result: dict, weight: int = 2
+) -> None:
     initial = board.state_key()
     match algo:
         case "BFS":

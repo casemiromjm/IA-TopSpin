@@ -105,7 +105,7 @@ class MenuState:
 def _button_row(screen, cx, y, labels, selected, mouse, btn_w=BTN_W, disabled=None):
     """Draw a horizontal row of buttons.
 
-    disabled: set of indices that should appear as yellow/coming-soon and be unclickable.
+    disabled: set of indices rendered in yellow — visually distinct, not selectable.
     """
     if disabled is None:
         disabled = set()
