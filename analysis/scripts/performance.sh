@@ -4,7 +4,8 @@ cd "$(dirname "$0")/../../" || exit 1
 
 UNINFORMED_ALGOS=("bfs" "dfs" "ids")
 INFORMED_ALGOS=("greedy" "astar" "weighted-astar")
-HEURISTICS=("adjacency" "min_misplaced_slots")
+#HEURISTICS=("adjacency" "min_misplaced_slots" "pattern_db")
+HEURISTICS=("pattern_db")
 
 # make sure it has all boards
 echo "Generating available boards CSV..."
