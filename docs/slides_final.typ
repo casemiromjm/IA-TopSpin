@@ -110,10 +110,30 @@ All solvers run in a *background thread* so the UI never freezes. \
 *Hint system:* Greedy runs in the background while the human plays to suggest the next best move.
 
 == Experimental Results — Uninformed Search
-#lorem(80)
+
+#align(center)[
+  #figure(
+    image("./assets/runtime_by_algo.png", width: 85%),
+    caption: [Mean runtime by algorithm (log scale, successful runs only).],
+  )
+]
+
+- Many BFS/IDS runs time out at sizes 14–20; the plot shows only successful runs.
+- Runtime varies sharply with size and difficulty; size 20 has few successful uninformed runs.
+- Informed methods dominate at size 10+, except where Greedy slows down.
 
 == Experimental Results — Informed Search
-#lorem(80)
+
+#align(center)[
+  #figure(
+    image("./assets/informed_runtime_by_heuristic.png", width: 85%),
+    caption: [Informed search runtime by heuristic (log scale, successful runs only).],
+  )
+]
+
+- Heuristic choice can change runtime by orders of magnitude (especially for Greedy).
+- Weighted A\* is usually faster than A\* for adjacency/min-misplaced at size 10–14.
+- Pattern DB helps on some size 10 cases but is slower on size 20.
 
 == Conclusions
 #lorem(80)
