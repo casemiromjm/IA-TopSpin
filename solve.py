@@ -39,6 +39,7 @@ from timeout_utils import TimeoutException, _timeout_handler
 import csv
 from pathlib import Path
 
+
 def write_results_to_csv(args, result):
     """
     Append result of a run to performance.csv
@@ -56,28 +57,45 @@ def write_results_to_csv(args, result):
         writer = csv.writer(f)
 
         if write_header:
-            writer.writerow(["size","difficulty","board_name","algo","heuristic","time(s)","steps","timeout"])
-
+            writer.writerow(
+                [
+                    "size",
+                    "difficulty",
+                    "board_name",
+                    "algo",
+                    "heuristic",
+                    "time(s)",
+                    "steps",
+                    "timeout",
+                ]
+            )
 
         # not really necessary considering how performance.sh calls solve, but nice to have
         has_board_cnt = args.board.find(":")
-        board_name = f"{args.size}:{args.board}" if has_board_cnt != -1 else f"{args.size}:{args.board}:1"
+        board_name = (
+            f"{args.size}:{args.board}"
+            if has_board_cnt != -1
+            else f"{args.size}:{args.board}:1"
+        )
 
         if result.get("timeout"):
             time_output = "N/A"
         else:
             time_output = round(result.get("time", 0), 6)
 
-        writer.writerow([
-            args.size,
-            args.board,
-            board_name,
-            args.algo.upper(),
-            args.heuristic if args.algo in ["greedy", "astar"] else "N/A",
-            time_output,
-            result.get("steps", 0),
-            result.get("timeout", False)
-        ])
+        writer.writerow(
+            [
+                args.size,
+                args.board,
+                board_name,
+                args.algo.upper(),
+                args.heuristic if args.algo in ["greedy", "astar"] else "N/A",
+                time_output,
+                result.get("steps", 0),
+                result.get("timeout", False),
+            ]
+        )
+
 
 def _states_to_moves(path: list) -> list[str]:
     moves = []
@@ -110,7 +128,7 @@ def _run(board: Board, search_fn, timeout: int) -> dict:
     if timeout > 0:
         signal.signal(signal.SIGALRM, _timeout_handler)
         signal.alarm(timeout)
-    
+
     try:
         node = search_fn(board.state_key(), board.is_goal, board.get_child_states)
         result = _extract(node)
@@ -120,7 +138,7 @@ def _run(board: Board, search_fn, timeout: int) -> dict:
     finally:
         if timeout > 0:
             signal.alarm(0)
-    
+
     result["time"] = time.time() - t0
     return result
 
@@ -133,7 +151,7 @@ def _run_informed(board: Board, search_fn, heuristic_name: str, timeout: int) ->
     if timeout > 0:
         signal.signal(signal.SIGALRM, _timeout_handler)
         signal.alarm(timeout)
-    
+
     try:
         node = search_fn(
             board.state_key(),
@@ -148,7 +166,7 @@ def _run_informed(board: Board, search_fn, heuristic_name: str, timeout: int) ->
     finally:
         if timeout > 0:
             signal.alarm(0)
-    
+
     result["time"] = time.time() - t0
     return result
 
@@ -236,7 +254,9 @@ def main():
 
     # Pass heuristic_name to informed algorithms
     if args.algo in INFORMED_ALGOS:
-        result = ALGOS[args.algo](board, heuristic_name=args.heuristic, timeout=args.timeout)
+        result = ALGOS[args.algo](
+            board, heuristic_name=args.heuristic, timeout=args.timeout
+        )
     else:
         result = ALGOS[args.algo](board, timeout=args.timeout)
 

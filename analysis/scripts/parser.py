@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 from src.premade import CONFIGS
 
+
 def getBoardsData():
     """
     Parse available boards (CONFIGS) to a simple csv
@@ -21,7 +22,8 @@ def getBoardsData():
                 for _ in boards:
                     f.write(f"{size},{diff},{cnt}\n")
                     cnt += 1
-        
+
+
 if __name__ == "__main__":
     getBoardsData()
     print("Generated csv with all boards!")
