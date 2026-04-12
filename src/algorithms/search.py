@@ -131,6 +131,35 @@ def greedy_search(initial_state, goal_state_func, operators_func, heuristic_func
     return None
 
 
+def weighted_astar_search(
+    initial_state, goal_state_func, operators_func, heuristic_func, weight=2
+):
+    root = TreeNode(initial_state)
+    counter = 0
+    heap = [(weight * heuristic_func(initial_state), counter, root)]
+    visited = set()
+
+    while heap:
+        _, _, node = heapq.heappop(heap)
+
+        if node.state in visited:
+            continue
+        visited.add(node.state)
+
+        if goal_state_func(node.state):
+            return node
+
+        for next_state, cost in operators_func(node.state):
+            if next_state not in visited:
+                counter += 1
+                child = TreeNode(next_state, parent=node)
+                node.add_child(child, operator_cost=cost)
+                f = child.cost + weight * heuristic_func(next_state)
+                heapq.heappush(heap, (f, counter, child))
+
+    return None
+
+
 def astar(initial_state, goal_state_func, operators_func, heuristic_func):
     """
     A* Algorithm

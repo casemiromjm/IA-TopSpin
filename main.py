@@ -8,6 +8,7 @@ from src.algorithms.search import (
     iterative_deepening_search,
     greedy_search,
     astar,
+    weighted_astar_search,
 )
 from src.algorithms.informed import get_heuristic
 from src.board import Board
@@ -44,7 +45,9 @@ def _states_to_moves(path: list) -> list[str]:
     return moves
 
 
-def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict) -> None:
+def _solver_worker(
+    board: Board, algo: str, heuristic_name: str, result: dict, weight: int = 2
+) -> None:
     initial = board.state_key()
     match algo:
         case "BFS":
@@ -63,6 +66,11 @@ def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict) -
         case "AStar":
             heuristic_func = get_heuristic(heuristic_name)
             node = astar(initial, board.is_goal, board.get_child_states, heuristic_func)
+        case "Weighted A*":
+            heuristic_func = get_heuristic(heuristic_name)
+            node = weighted_astar_search(
+                initial, board.is_goal, board.get_child_states, heuristic_func, weight
+            )
         case _:
             node = None
 
@@ -143,6 +151,7 @@ def main() -> None:
                                         menu.selected_algo,
                                         menu.selected_heuristic,
                                         _solve_result,
+                                        menu.selected_weight,
                                     ),
                                     daemon=True,
                                 ).start()
