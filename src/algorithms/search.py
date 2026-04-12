@@ -131,6 +131,55 @@ def greedy_search(initial_state, goal_state_func, operators_func, heuristic_func
     return None
 
 
+def weighted_astar_search(
+    initial_state, goal_state_func, operators_func, heuristic_func, weight=2
+):
+    """Weighted A* search using f(n) = g(n) + W * h(n), for W > 1.
+
+    Expands fewer nodes than A* at the cost of solution optimality.
+    At W=1 this behaves identically to A*.
+
+    Args:
+        initial_state: Starting state
+        goal_state_func: Function to check if state is goal
+        operators_func: Function to get child states
+        heuristic_func: Heuristic function for states
+        weight: W >= 1, how much to inflate the heuristic (default 2)
+
+    Returns:
+        TreeNode: Goal node if found, None otherwise
+    """
+    root = TreeNode(initial_state)
+    # tie-breaker counter: heapq can't compare TreeNode objects directly
+    counter = 0
+    # initial g is 0, so f = W * h
+    heap = [(weight * heuristic_func(initial_state), counter, root)]
+    visited = set()
+
+    while heap:
+        _, _, node = heapq.heappop(heap)
+
+        # already expanded via a cheaper path
+        if node.state in visited:
+            continue
+        visited.add(node.state)
+
+        if goal_state_func(node.state):
+            return node
+
+        for next_state, cost in operators_func(node.state):
+            if next_state not in visited:
+                counter += 1
+                child = TreeNode(next_state, parent=node)
+                # g = current cost (node.cost) + cost of the next move (cost)
+                node.add_child(child, operator_cost=cost)
+                # f = g + W * h
+                f = child.cost + weight * heuristic_func(next_state)
+                heapq.heappush(heap, (f, counter, child))
+
+    return None
+
+
 def astar(initial_state, goal_state_func, operators_func, heuristic_func):
     """
     A* Algorithm
