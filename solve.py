@@ -36,7 +36,7 @@ from timeout_utils import TimeoutException, _timeout_handler
 import csv
 from pathlib import Path
 
-def append_results_to_csv(args, result):
+def write_results_to_csv(args, result):
 
     project_root = Path(__file__).resolve().parent
     output_dir = project_root / "analysis" / "data"
@@ -46,7 +46,8 @@ def append_results_to_csv(args, result):
 
     write_header = not file_path.exists()
 
-    with open(file_path, "a", newline="") as f:
+    # can switch to mode="a" for only appending and never overwriting
+    with open(file_path, mode="w", newline="") as f:
         writer = csv.writer(f)
 
         if write_header:
@@ -198,8 +199,8 @@ def main():
     parser.add_argument(
         "--timeout",
         type=int,
-        default=300,
-        help="Timeout in seconds. Set to 0 for no limit (default: 300)",
+        default=150,
+        help="Timeout in seconds. Set to 0 for no limit (default: 150)",
     )
 
     args = parser.parse_args()
@@ -246,7 +247,7 @@ def main():
 
     print(f"Time : {time_display}")
 
-    append_results_to_csv(args, result)
+    write_results_to_csv(args, result)
 
 
 if __name__ == "__main__":
