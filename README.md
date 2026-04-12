@@ -56,10 +56,10 @@ _**DISCLAIMER:** You can use the flag `--help` for better understanding the CLI_
 
 | Argument | Values |
 |----------|--------|
-| `--size` | `10`, `20` |
+| `--size` | `6`, `10`, `14`, `20` |
 | `--board` | `random`, `easy`, `easy:2`, `medium`, `hard:1`, … |
 | `--algo` | `bfs`, `dfs`, `ids`, `greedy`, `astar` |
-| `--heuristic` | `adjacency`, `min_misplaced_slots` _(required for greedy / astar)_ |
+| `--heuristic` | `adjacency`, `min_misplaced_slots`, `pattern_db` _(required for greedy / astar)_ |
 
 ### In-game controls (GUI)
 
