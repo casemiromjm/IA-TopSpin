@@ -96,7 +96,7 @@ def write_results_to_csv(args, result):
                 args.board,
                 board_name,
                 args.algo.upper(),
-                args.heuristic if args.algo in ["greedy", "astar"] else "N/A",
+                args.heuristic if args.algo in INFORMED_ALGOS else "N/A",
                 time_output,
                 result.get("steps", 0),
                 result.get("timeout", False),
