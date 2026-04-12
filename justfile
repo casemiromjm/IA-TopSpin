@@ -24,7 +24,7 @@ cli size difficulty algorithm heuristic="":
 # List all premade boards
 [group: 'dev']
 boards:
-    @uv run src/premade.py
+    @uv run $root/src/premade.py
 
 # Check for linting errors
 [group: 'dev']
@@ -41,19 +41,18 @@ fix:
 format:
     @uv run ruff format .
 
-# Build Checkpoint 1 slides
+# Export project dependencies
+[group: 'dev']
+dependencies:
+    @uv export --no-hashes --no-dev --format requirements-txt > requirements.txt
+
+# Build slides
 [group: 'docs']
-cp1:
-    @typst compile docs/slides_cp1.typ
-    @echo "Created Slides for CP1!"
+docs deliver:
+    @typst compile docs/slides_{{ lowercase(deliver) }}.typ
 
 # Gather all performance related data
 [group: 'analysis']
 perf:
     @chmod +x analysis/scripts/performance.sh
     @./analysis/scripts/performance.sh
-
-# Generate plots based on perf data
-[group: 'analysis']
-graph:
-    @echo "Doing something"

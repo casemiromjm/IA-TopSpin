@@ -1,6 +1,7 @@
 # About performance
 
-All tests were run in this laptop:
+All benchmarks were run in this laptop:
+
 - **Model:** Lenovo Yoga Pro 7 14APH8
 - **CPU:** AMD Ryzen 7 7840HS
 - **RAM:** 32gb LPDDR5 6400 MT/s (3200 MHz)

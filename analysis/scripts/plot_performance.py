@@ -84,7 +84,7 @@ def plot_runtime_by_algo(rows: list[dict[str, str]], out_dir: Path) -> None:
         row["time(s)"] = parse_float(row["time(s)"])
     means = mean_by(rows, ("size", "algo"), "time(s)")
 
-    fig, axes = plt.subplots(1, len(sizes), figsize=(4 * len(sizes), 4), sharey=True)
+    fig, axes = plt.subplots(1, len(sizes), figsize=(4 * len(sizes), 4.5), sharey=True)
     if len(sizes) == 1:
         axes = [axes]
 
@@ -130,13 +130,22 @@ def plot_informed_by_heuristic(rows: list[dict[str, str]], out_dir: Path) -> Non
             if s == size
         ]
         entries.sort(key=lambda item: (item[0], item[1]))
-        labels = [f"{algo}:{heuristic}" for algo, heuristic, _ in entries]
+        algo_short = {"ASTAR": "A", "WEIGHTED_ASTAR": "WA", "GREEDY": "G"}
+        heuristic_short = {
+            "adjacency": "adj",
+            "min_misplaced_slots": "mms",
+            "pattern_db": "pdb",
+        }
+        labels = [
+            f"{algo_short.get(algo, algo)}:{heuristic_short.get(heuristic, heuristic)}"
+            for algo, heuristic, _ in entries
+        ]
         plotted = [value for _, _, value in entries]
         ax.plot(labels, plotted, marker="o")
         ax.set_title(f"Size {size}")
         ax.set_yscale("log")
         ax.set_ylabel("Mean runtime (s)")
-        ax.tick_params(axis="x", rotation=45)
+        ax.tick_params(axis="x", rotation=35, labelsize=8)
 
     fig.suptitle("Mean runtime for informed search (log scale)")
     fig.tight_layout()
