@@ -11,9 +11,10 @@ from src.algorithms.informed import HEURISTIC_NAMES
 SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
 UNINFORMED_ALGOS = ["BFS", "DFS", "IDS"]
-INFORMED_ALGOS = ["Greedy", "A*"]
-INFORMED_ALGOS_SOON = ["Weighted A*", "Pattern DB"]  # displayed but not yet usable
+INFORMED_ALGOS = ["Greedy", "A*", "Weighted A*"]
+INFORMED_ALGOS_SOON = ["Pattern DB"]  # displayed but not yet usable
 HEURISTICS = ["Adjacency", "Min Misplaced"]
+WEIGHTS = [1, 2, 3, 5]
 
 BG_COLOR = "antiquewhite1"
 TITLE_COLOR = (45, 95, 180)
@@ -66,6 +67,7 @@ class MenuState:
         self.uninformed_algo: int = 0  # index into UNINFORMED_ALGOS
         self.informed_algo: int = 0  # index into INFORMED_ALGOS
         self.heuristic: int = 0  # index into HEURISTICS (default: Adjacency)
+        self.weight: int = 1  # index into WEIGHTS (default: 2)
 
     @property
     def selected_size(self) -> int:
@@ -88,6 +90,10 @@ class MenuState:
     def selected_heuristic(self) -> str:
         """Returns lowercase name for use with get_heuristic()."""
         return HEURISTIC_NAMES[self.heuristic]
+
+    @property
+    def selected_weight(self) -> int:
+        return WEIGHTS[self.weight]
 
     @property
     def num_boards(self) -> int:
@@ -245,6 +251,8 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
     num_rows = 2  # algo-type + algorithm
     if state.search_type == 2:
         num_rows += 1  # heuristic
+        if INFORMED_ALGOS[state.informed_algo] == "Weighted A*":
+            num_rows += 1  # weight
 
     y_start = sh // 3 - 36
     available = sh - y_start - 120
@@ -284,11 +292,21 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
 
     # heuristic — only for Informed
     heuristic_rects = []
+    weight_rects = []
     if state.search_type == 2:
         _h, _ = lbl_font.render("Heuristic", LABEL_COLOR)
         screen.blit(_h, _h.get_rect(centerx=cx, top=y - 28))
         heuristic_rects = _button_row(screen, cx, y, HEURISTICS, state.heuristic, mouse)
         y += row_gap
+
+        # weight — only for Weighted A*
+        if INFORMED_ALGOS[state.informed_algo] == "Weighted A*":
+            _w, _ = lbl_font.render("Weight", LABEL_COLOR)
+            screen.blit(_w, _w.get_rect(centerx=cx, top=y - 28))
+            weight_rects = _button_row(
+                screen, cx, y, [str(w) for w in WEIGHTS], state.weight, mouse
+            )
+            y += row_gap
 
     # start button
     start_r = _action_button(
@@ -301,6 +319,7 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
         "algo_type": algo_type_rects,
         "algo": algo_rects,
         "heuristic": heuristic_rects,
+        "weight": weight_rects,
         "start": start_r,
         "next": None,
     }
@@ -368,6 +387,11 @@ def handle_menu_click(pos, rects, state: MenuState) -> bool:
         for i, r in enumerate(rects.get("heuristic", [])):
             if r.collidepoint(pos):
                 state.heuristic = i
+                return False
+        # weight
+        for i, r in enumerate(rects.get("weight", [])):
+            if r.collidepoint(pos):
+                state.weight = i
                 return False
         # START
         if rects.get("start") and rects["start"].collidepoint(pos):
