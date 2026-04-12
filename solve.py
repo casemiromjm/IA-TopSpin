@@ -30,6 +30,9 @@ from src.algorithms.search import (
 )
 from src.algorithms.informed import get_heuristic, HEURISTIC_NAMES
 
+import signal
+from timeout_utils import TimeoutException, _timeout_handler
+
 import csv
 from pathlib import Path
 
@@ -94,25 +97,51 @@ def _extract(node) -> dict:
     return {"solution": _states_to_moves(path), "steps": len(path) - 1, "node": node}
 
 
-def _run(board: Board, search_fn) -> dict:
+def _run(board: Board, search_fn, timeout: int) -> dict:
     t0 = time.time()
-    node = search_fn(board.state_key(), board.is_goal, board.get_child_states)
-    result = _extract(node)
+
+    if timeout > 0:
+        signal.signal(signal.SIGALRM, _timeout_handler)
+        signal.alarm(timeout)
+    
+    try:
+        node = search_fn(board.state_key(), board.is_goal, board.get_child_states)
+        result = _extract(node)
+        result["timeout"] = False
+    except TimeoutException:
+        result = {"solution": None, "steps": 0, "node": None, "timeout": True}
+    finally:
+        if timeout > 0:
+            signal.alarm(0)
+    
     result["time"] = time.time() - t0
     return result
 
 
-def _run_informed(board: Board, search_fn, heuristic_name: str) -> dict:
+def _run_informed(board: Board, search_fn, heuristic_name: str, timeout: int) -> dict:
     """Run an informed search algorithm with the specified heuristic."""
     t0 = time.time()
     heuristic_func = get_heuristic(heuristic_name)
-    node = search_fn(
-        board.state_key(),
-        board.is_goal,
-        board.get_child_states,
-        heuristic_func,
-    )
-    result = _extract(node)
+
+    if timeout > 0:
+        signal.signal(signal.SIGALRM, _timeout_handler)
+        signal.alarm(timeout)
+    
+    try:
+        node = search_fn(
+            board.state_key(),
+            board.is_goal,
+            board.get_child_states,
+            heuristic_func,
+        )
+        result = _extract(node)
+        result["timeout"] = False
+    except TimeoutException:
+        result = {"solution": None, "steps": 0, "node": None, "timeout": True}
+    finally:
+        if timeout > 0:
+            signal.alarm(0)
+    
     result["time"] = time.time() - t0
     return result
 
@@ -166,6 +195,13 @@ def main():
         help="Heuristic for informed search (default: adjacency)",
     )
 
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=300,
+        help="Timeout in seconds. Set to 0 for no limit (default: 300)",
+    )
+
     args = parser.parse_args()
 
     # Validation: warn if heuristic specified for uninformed algorithm
@@ -192,9 +228,9 @@ def main():
 
     # Pass heuristic_name to informed algorithms
     if args.algo in ["greedy"]:
-        result = ALGOS[args.algo](board, heuristic_name=args.heuristic)
+        result = ALGOS[args.algo](board, heuristic_name=args.heuristic, timeout=args.timeout)
     else:
-        result = ALGOS[args.algo](board)
+        result = ALGOS[args.algo](board, timeout=args.timeout)
 
     sol = result["solution"]
 
