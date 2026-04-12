@@ -24,7 +24,7 @@ cli size difficulty algorithm heuristic="":
 # List all premade boards
 [group: 'dev']
 boards:
-    @uv run $root/src/premade.py
+    @uv run src/premade.py
 
 # Check for linting errors
 [group: 'dev']
