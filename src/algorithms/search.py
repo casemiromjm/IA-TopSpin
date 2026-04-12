@@ -223,4 +223,3 @@ def astar(initial_state, goal_state_func, operators_func, heuristic_func):
                 heapq.heappush(queue, (f_score, child))
 
     return None
-
