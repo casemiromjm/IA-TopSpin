@@ -12,8 +12,8 @@ SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
 UNINFORMED_ALGOS = ["BFS", "DFS", "IDS"]
 INFORMED_ALGOS = ["Greedy", "A*", "Weighted A*"]
-INFORMED_ALGOS_SOON = ["Pattern DB"]
-HEURISTICS = ["Adjacency", "Min Misplaced"]
+INFORMED_ALGOS_SOON = []
+HEURISTICS = ["Adjacency", "Min Misplaced", "Pattern DB"]
 WEIGHTS = [1, 2, 3, 5]
 
 BG_COLOR = "antiquewhite1"
