@@ -12,7 +12,7 @@ SIZES = [10, 20]
 DIFFICULTIES = ["Random", "Easy", "Medium", "Hard"]
 UNINFORMED_ALGOS = ["BFS", "DFS", "IDS"]
 INFORMED_ALGOS = ["Greedy", "A*"]
-INFORMED_ALGOS_SOON = ["Weighted A*", "Pattern DB"]   # displayed but not yet usable
+INFORMED_ALGOS_SOON = ["Weighted A*", "Pattern DB"]  # displayed but not yet usable
 HEURISTICS = ["Adjacency", "Min Misplaced"]
 
 BG_COLOR = "antiquewhite1"
@@ -31,8 +31,8 @@ BACK_COLOR = (160, 165, 170)
 BACK_HOVER_COLOR = (130, 140, 150)
 NEXT_COLOR = (55, 108, 192)
 NEXT_HOVER_COLOR = (40, 85, 160)
-SOON_COLOR = (210, 175, 50)       # golden yellow — coming-soon buttons
-SOON_TEXT_COLOR = (90, 70, 10)    # dark brown text on yellow
+SOON_COLOR = (210, 175, 50)  # golden yellow — coming-soon buttons
+SOON_TEXT_COLOR = (90, 70, 10)  # dark brown text on yellow
 
 BTN_W = 110
 BTN_H = 42
@@ -119,12 +119,16 @@ def _button_row(screen, cx, y, labels, selected, mouse, btn_w=BTN_W, disabled=No
             bg = BTN_SEL_COLOR if sel else (BTN_HOVER_COLOR if hov else BTN_COLOR)
             fg = BTN_TEXT_SEL if sel else BTN_TEXT_COLOR
         pygame.draw.rect(screen, bg, r, border_radius=BTN_RADIUS)
-        txt, _ = _font("Arial", 15, bold=(i not in disabled and i == selected)).render(lbl, fg)
+        txt, _ = _font("Arial", 15, bold=(i not in disabled and i == selected)).render(
+            lbl, fg
+        )
         screen.blit(txt, txt.get_rect(center=r.center))
     return rects
 
 
-def _action_button(screen, cx, y, label, base_color, hover_color, mouse, w=START_W, h=START_H):
+def _action_button(
+    screen, cx, y, label, base_color, hover_color, mouse, w=START_W, h=START_H
+):
     r = pygame.Rect(cx - w // 2, y, w, h)
     color = hover_color if r.collidepoint(mouse) else base_color
     pygame.draw.rect(screen, color, r, border_radius=14)
@@ -161,7 +165,9 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
         # size
         _s, _ = lbl_font.render("Size", LABEL_COLOR)
         screen.blit(_s, _s.get_rect(centerx=cx, top=y - 28))
-        size_rects = _button_row(screen, cx, y, [str(s) for s in SIZES], state.size, mouse)
+        size_rects = _button_row(
+            screen, cx, y, [str(s) for s in SIZES], state.size, mouse
+        )
         y += row_gap
 
         # difficulty
@@ -177,14 +183,18 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
             labels = [f"#{i}" for i in range(1, n + 1)]
             _b, _ = lbl_font.render("Board", LABEL_COLOR)
             screen.blit(_b, _b.get_rect(centerx=cx, top=y - 28))
-            board_rects = _button_row(screen, cx, y, labels, state.board_num, mouse, btn_w=70)
+            board_rects = _button_row(
+                screen, cx, y, labels, state.board_num, mouse, btn_w=70
+            )
             y += row_gap
 
         # solver type: Human or Algorithm
         _sv, _ = lbl_font.render("Solver", LABEL_COLOR)
         screen.blit(_sv, _sv.get_rect(centerx=cx, top=y - 28))
         solver_sel = 0 if state.search_type == 0 else 1
-        solver_rects = _button_row(screen, cx, y, ["Human", "Algorithm"], solver_sel, mouse)
+        solver_rects = _button_row(
+            screen, cx, y, ["Human", "Algorithm"], solver_sel, mouse
+        )
         y += row_gap
 
         # action button: START (Human) or NEXT → (Algorithm)
@@ -196,7 +206,14 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
         else:
             start_r = None
             next_r = _action_button(
-                screen, cx, y + 10, "Next  →", NEXT_COLOR, NEXT_HOVER_COLOR, mouse, w=START_W
+                screen,
+                cx,
+                y + 10,
+                "Next  →",
+                NEXT_COLOR,
+                NEXT_HOVER_COLOR,
+                mouse,
+                w=START_W,
             )
 
         # hint
@@ -247,13 +264,21 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
     _a, _ = lbl_font.render("Algorithm", LABEL_COLOR)
     screen.blit(_a, _a.get_rect(centerx=cx, top=y - 28))
     if state.search_type == 1:
-        algo_rects = _button_row(screen, cx, y, UNINFORMED_ALGOS, state.uninformed_algo, mouse)
+        algo_rects = _button_row(
+            screen, cx, y, UNINFORMED_ALGOS, state.uninformed_algo, mouse
+        )
     else:
         all_informed = INFORMED_ALGOS + INFORMED_ALGOS_SOON
         soon_indices = set(range(len(INFORMED_ALGOS), len(all_informed)))
         algo_rects = _button_row(
-            screen, cx, y, all_informed, state.informed_algo, mouse,
-            btn_w=120, disabled=soon_indices,
+            screen,
+            cx,
+            y,
+            all_informed,
+            state.informed_algo,
+            mouse,
+            btn_w=120,
+            disabled=soon_indices,
         )
     y += row_gap
 
@@ -266,7 +291,9 @@ def draw_menu(screen, screen_size, state: MenuState, mouse):
         y += row_gap
 
     # start button
-    start_r = _action_button(screen, cx, y + 10, "START", START_COLOR, START_HOVER, mouse)
+    start_r = _action_button(
+        screen, cx, y + 10, "START", START_COLOR, START_HOVER, mouse
+    )
 
     return {
         "page": 1,

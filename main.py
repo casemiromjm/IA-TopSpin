@@ -63,7 +63,7 @@ def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict) -
             node = greedy_search(
                 initial, board.is_goal, board.get_child_states, heuristic_func
             )
-        case "AStar":
+        case "A*":
             heuristic_func = get_heuristic(heuristic_name)
             node = astar(initial, board.is_goal, board.get_child_states, heuristic_func)
         case _:
@@ -80,6 +80,13 @@ def _solver_worker(board: Board, algo: str, heuristic_name: str, result: dict) -
         path.reverse()
         result["moves"] = _states_to_moves(path)
     result["done"] = True
+
+
+def _launch_hint(board: Board) -> dict:
+    """Spawn the hint worker in a background thread and return its result dict."""
+    result: dict = {}
+    threading.Thread(target=_hint_worker, args=(board, result), daemon=True).start()
+    return result
 
 
 def _hint_worker(board: Board, result: dict) -> None:
@@ -120,11 +127,9 @@ def main() -> None:
 
     # hint state
     _hint_move: str | None = None
-    _hint_timer: float = 0.0
     _hint_computing: bool = False
     _hint_result: dict = {}
     _hint_btn_rect: pygame.Rect = pygame.Rect(0, 0, 0, 0)
-    HINT_DISPLAY_SECONDS: float = 3.0
 
     running = True
 
@@ -195,12 +200,7 @@ def main() -> None:
                     elif event.key == pygame.K_h and not _hint_computing:
                         _hint_computing = True
                         _hint_move = None
-                        _hint_result = {}
-                        threading.Thread(
-                            target=_hint_worker,
-                            args=(board, _hint_result),
-                            daemon=True,
-                        ).start()
+                        _hint_result = _launch_hint(board)
                 if (
                     event.type == pygame.MOUSEBUTTONDOWN
                     and event.button == 1
@@ -210,12 +210,7 @@ def main() -> None:
                 ):
                     _hint_computing = True
                     _hint_move = None
-                    _hint_result = {}
-                    threading.Thread(
-                        target=_hint_worker,
-                        args=(board, _hint_result),
-                        daemon=True,
-                    ).start()
+                    _hint_result = _launch_hint(board)
 
         # ── state transitions ─────────────────────────────────────────
         if (
@@ -227,13 +222,7 @@ def main() -> None:
 
         if _hint_computing and _hint_result.get("done"):
             _hint_move = _hint_result.get("move")
-            _hint_timer = HINT_DISPLAY_SECONDS
             _hint_computing = False
-
-        if _hint_move is not None:
-            _hint_timer -= dt
-            if _hint_timer <= 0:
-                _hint_move = None
 
         if state == "solving" and _solve_result.get("done"):
             moves = _solve_result.get("moves")
@@ -317,7 +306,11 @@ def main() -> None:
                 _hint_btn_rect = btn_surf.get_rect(centerx=sw // 2, top=12)
                 _hint_btn_rect.inflate_ip(28, 14)
                 if not _hint_computing:
-                    btn_color = (40, 85, 160) if _hint_btn_rect.collidepoint(mouse) else (55, 108, 192)
+                    btn_color = (
+                        (40, 85, 160)
+                        if _hint_btn_rect.collidepoint(mouse)
+                        else (55, 108, 192)
+                    )
                 pygame.draw.rect(screen, btn_color, _hint_btn_rect, border_radius=8)
                 screen.blit(btn_surf, btn_surf.get_rect(center=_hint_btn_rect.center))
 
@@ -330,8 +323,15 @@ def main() -> None:
                     }
                     hint_label = MOVE_LABELS.get(_hint_move, _hint_move)
                     result_font = pygame.font.SysFont("Arial", 20, bold=True)
-                    result_surf = result_font.render(f"Hint: {hint_label}", True, (55, 108, 192))
-                    screen.blit(result_surf, result_surf.get_rect(centerx=sw // 2, top=_hint_btn_rect.bottom + 6))
+                    result_surf = result_font.render(
+                        f"Hint: {hint_label}", True, (55, 108, 192)
+                    )
+                    screen.blit(
+                        result_surf,
+                        result_surf.get_rect(
+                            centerx=sw // 2, top=_hint_btn_rect.bottom + 6
+                        ),
+                    )
 
         pygame.display.flip()
 
