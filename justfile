@@ -47,3 +47,13 @@ cp1:
     @typst compile docs/slides_cp1.typ
     @echo "Created Slides for CP1!"
 
+# Gather all performance related data
+[group: 'analysis']
+perf:
+    @chmod +x analysis/scripts/performance.sh
+    @./analysis/scripts/performance.sh
+
+# Generate plots based on perf data
+[group: 'analysis']
+graph:
+    @echo "Doing something"
