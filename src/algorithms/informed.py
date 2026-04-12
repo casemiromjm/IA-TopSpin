@@ -1,7 +1,6 @@
 """Registry and utilities for informed search algorithms."""
 
-from .heuristics import adjacency_heuristic, min_misplaced_slots
-from .pattern_db import pattern_db_heuristic
+from .heuristics import adjacency_heuristic, min_misplaced_slots, pattern_db_heuristic
 
 HEURISTICS = {
     "adjacency": adjacency_heuristic,
