@@ -48,8 +48,10 @@ dependencies:
 
 # Build slides
 [group: 'docs']
+[arg('deliver', pattern='cp1|final')]
 docs deliver:
     @typst compile docs/slides_{{ lowercase(deliver) }}.typ
+    @echo 'Created slides for {{ uppercase(deliver) }}!'
 
 # Gather all performance related data
 [group: 'analysis']
